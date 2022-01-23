@@ -1,7 +1,7 @@
 (()=>{
     if(location.host!=="www.youtube.com")
     {
-        document.querySelector(`[src^="https://kfsshrimp.github.io/js/Youtube.js"]`);
+        document.querySelector(`[src^="https://kfsshrimp.github.io/js/Youtube.js"]`).remove();
         return;
     }
 
