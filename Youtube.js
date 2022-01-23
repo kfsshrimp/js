@@ -590,6 +590,8 @@
             },
             "SpeechRecord":(lang)=>{
 
+                if(typeof(webkitSpeechRecognition)==="undefined") return;
+
                 //if(Ex.flag.SpeechRecord!==false) Ex.flag.SpeechRecord.stop();
 
                 Ex.flag.SpeechRecord = new webkitSpeechRecognition()
@@ -773,8 +775,10 @@
             "default":()=>{
 
                 Ex.Clock.setInterval.flag = setInterval(()=>{
-                    Ex.f.SpeechRecordSecCounter();
                     Ex.f.FlagUpd();
+
+                    if(typeof(webkitSpeechRecognition)==="undefined") return;
+                    Ex.f.SpeechRecordSecCounter();
                 },1000);
 
 
