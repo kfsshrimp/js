@@ -17,6 +17,7 @@
             "setTimeout":{}
         },
         "flag":{
+            "SpeechRecordStatus":true,
             "SpeechRecordSec":0,
             "SpeechRecord":false,
             "watermark_set":true,
@@ -472,12 +473,14 @@
                         if(e.target.parentElement.querySelector(".ytp-menuitem-content").children.length===0)
                         {
                             e.target.parentElement.querySelector(".ytp-menuitem-content").innerHTML = `<div class="ytp-menuitem-toggle-checkbox" data-event="ClickEvent" data-mode="SpeechRecord"></div>`;
+                            Ex.flag.SpeechRecordStatus = true;
                             Ex.flag.SpeechRecord.start();
                             Ex.obj.SpeechRecord.style.display = "block";
                         }
                         else
                         {
                             e.target.parentElement.querySelector(".ytp-menuitem-content").innerHTML = ``;
+                            Ex.flag.SpeechRecordStatus = false;
                             Ex.flag.SpeechRecord.stop();
                             Ex.obj.SpeechRecord.style.display = "none";
                         }
@@ -587,7 +590,7 @@
             },
             "SpeechRecord":(lang)=>{
 
-                if(Ex.flag.SpeechRecord!==false) Ex.flag.SpeechRecord.stop();
+                //if(Ex.flag.SpeechRecord!==false) Ex.flag.SpeechRecord.stop();
 
                 Ex.flag.SpeechRecord = new webkitSpeechRecognition()
 
@@ -605,9 +608,11 @@
                 r.onend = ()=>{
                     //console.log("SpeechRecordend");
                     Ex.flag.SpeechRecordSec = 0;
-                    setTimeout(()=>{
-                        r.start();
-                    },1000);
+
+                    if(Ex.flag.SpeechRecordStatus)
+                        setTimeout(()=>{
+                            r.start();
+                        },1000);
                 }
                 r.start();
 
