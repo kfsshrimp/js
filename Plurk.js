@@ -1,6 +1,7 @@
 (()=>{
     if(location.host!=="www.plurk.com")
     {
+        document.querySelector(`[src^="https://kfsshrimp.github.io/js/Plurk.js"]`);
         return;
     }
     var Ex = {

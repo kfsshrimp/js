@@ -1,5 +1,9 @@
 (()=>{
-    if(location.host!=="www.youtube.com") return;
+    if(location.host!=="www.youtube.com")
+    {
+        document.querySelector(`[src^="https://kfsshrimp.github.io/js/Youtube.js"]`);
+        return;
+    }
 
     var Ex = {
         "id":"Youtube",
