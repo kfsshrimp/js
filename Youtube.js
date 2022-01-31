@@ -1,5 +1,6 @@
 (()=>{
-    if(location.host!=="www.youtube.com")
+    if(location.host!=="www.youtube.com" && 
+    document.querySelector("video")===null)
     {
         document.querySelector(`[src^="https://kfsshrimp.github.io/js/Youtube.js"]`).remove();
         return;
@@ -308,15 +309,24 @@
                 </div>
                 `
 
-                Ex.obj.SpeechRecord = document.createElement("div");
-                Ex.obj.SpeechRecord.id = "SpeechRecord";
-                Ex.obj.SpeechRecord.style.display = "block";
-                Ex.obj.SpeechRecord.setAttribute("draggable","true");
-                Ex.obj.SpeechRecord.dataset.r_event = "SpeechRecordMenu";
-                document.querySelector("#primary-inner").prepend(Ex.obj.SpeechRecord);
 
-                Ex.f.SpeechRecord('ja-JP');
+                if(typeof(webkitSpeechRecognition)!=="undefined")
+                {
+                    Ex.obj.SpeechRecord = document.createElement("div");
+                    Ex.obj.SpeechRecord.id = "SpeechRecord";
+                    Ex.obj.SpeechRecord.style.display = "block";
+                    Ex.obj.SpeechRecord.setAttribute("draggable","true");
+                    Ex.obj.SpeechRecord.dataset.r_event = "SpeechRecordMenu";
 
+                    if(document.querySelector("#primary-inner")!==null)
+                    {
+
+                        document.querySelector("#primary-inner").prepend(Ex.obj.SpeechRecord);
+        
+                        Ex.f.SpeechRecord('ja-JP');
+                    }
+                }
+                
 
 
                 document.addEventListener("contextmenu",(e)=>{
