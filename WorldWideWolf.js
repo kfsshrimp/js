@@ -16,6 +16,7 @@ var Ex;
         },
         "config":{
             "DB_url":"https://worldwidewolf-d5dd4-default-rtdb.firebaseio.com/",
+            "game_id":new URLSearchParams(location.search).get("game"),
             "player":[
                 "human",
                 "wolf",
@@ -96,6 +97,7 @@ var Ex;
                 Main.innerHTML = `
                     <div id="Menu"></div>
                     <div id="Content"></div>
+                    <div id="Chat"><textarea></textarea></div>
                 `;
 
 
@@ -192,15 +194,37 @@ var Ex;
 
                 Ex.DB.ref(`game`).once("value",r=>{
 
-                    Ex.flag.game_id = Object.keys(r.val()||{}).length-1;
+                    r = r.val()||{};
+
+                    Ex.flag.game_id = Object.keys(r).length-1;
                     Ex.flag.game_day = 0;
 
                     if(Ex.flag.game_id<0) Ex.flag.game_id = 0;
-                    
-                    Ex.DB.ref(`game/${Ex.flag.game_id}/day`).set(Ex.flag.game_day);
+
+                    if(Ex.config.game_id!==null) Ex.flag.game_id = Ex.config.game_id;
+
+                    if(r[Ex.flag.game_id]===undefined)
+                    {
+                        Ex.DB.ref(`game/${Ex.flag.game_id}/day`).set(Ex.flag.game_day);
+
+                        
+                    }
+                    else
+                    {
+                        if(r[Ex.flag.game_id].day===undefined)
+                        {
+                            Ex.DB.ref(`game/${Ex.flag.game_id}/day`).set(Ex.flag.game_day);
+
+                            Ex.flag.game_day = 0;
+                        }
+                        else
+                        {
+                            Ex.flag.game_day = r[Ex.flag.game_id].day;
+                            Ex.flag.log = r[Ex.flag.game_id].log;
+                        }
+                    }
 
                     
-
                     Ex.f.PlayerSet();
                 });
 
@@ -226,6 +250,8 @@ var Ex;
 
                     Ex.obj.Main.querySelector("#Menu").innerHTML = `
                         <input type="button" value="${Ex.Storage.local.account.a}">
+                        <input type="button" value="帳號登出"
+                        data-event="LogoOut">
                         <input type="button" value="${Ex.config.str[Ex.flag.player.job]}">
                     `;
 
@@ -238,11 +264,15 @@ var Ex;
                         `;
                     }
 
+                    Ex.f.AdminCheck(()=>{
 
-                    Ex.obj.Main.querySelector("#Menu").innerHTML += `
-                        <input type="button" value="下一天"
-                        data-event="_Next">
-                    `;
+                        Ex.obj.Main.querySelector("#Menu").innerHTML += `
+                            <input type="button" value="換日"
+                            data-event="_Next">        
+                        `;
+
+                    });
+                    
 
                     Ex.f.NpcSet();
                 });
@@ -295,58 +325,185 @@ var Ex;
 
                         var player = document.createElement("div");
                         var job = "";
+                        var dead = (a.dead===undefined)?``:`disabled="disabled"`;
+                        var info = '';
+
+                        for(var day in Ex.flag.log)
+                        {
+                            if(Ex.flag.log[day].divine!=="" && 
+                            Ex.flag.player.job==="divine" && 
+                            Ex.flag.log[day].divine*1===idx*1)
+                            {
+                                info += `
+                                    第${day-(-1)}天：占卜${(a.job==="wolf")?"人狼":"人類"}<BR>
+                                `;
+                            }
+
+                            if(Ex.flag.log[day].guard!=="" && 
+                            Ex.flag.player.job==="guard" && 
+                            Ex.flag.log[day].guard*1===idx*1)
+                            {
+                                info += `
+                                    第${day-(-1)}天：守護<BR>
+                                `;
+                            }
+                        }
+
+                        if(a.dead!==undefined)
+                        {
+                            info += `
+                                第${a.dead.day-(-1)}天：${(a.dead.type==="vote")?"投票處死":"人狼咬死"}<BR>
+                            `;
+                        }
+
+
                         player.className = "npc";
                         player.id = idx;
 
 
-                        if(Ex.flag.player.job===a.job && Ex.flag.player.job!=="human")
+                        if(Ex.flag.player.job===a.job && 
+                            Ex.flag.player.job!=="human")
+                        {
                             job = `${Ex.config.str[a.job]}`;
+                        }
+
+                        var human_c = 0;
+                        var wolf_c = 0;
+                        for(var id in Ex.flag.npc)
+                        {
+                            if(Ex.flag.npc[id].dead!==undefined) continue;
+
+                            (Ex.flag.npc[id].job==="wolf")?wolf_c++:human_c++;
+                        }
+
+                        if(wolf_c>=human_c)
+                        {
+                            job = `${Ex.config.str[a.job]}`;
+                            Ex.DB.ref(`game/${Ex.flag.game_id}/end`).set("wolf");
+
+                            Ex.flag.end = "wolf";
+                            
+                        }
+                        else
+                        {
+                            if(wolf_c===0) 
+                            {
+                                job = `${Ex.config.str[a.job]}`;
+                                Ex.DB.ref(`game/${Ex.flag.game_id}/end`).set("human");
+
+                                Ex.flag.end = "human";
+                            }
+                        }
+
+                        
 
                         player.innerHTML = `
-                            <input type="button" value="${a.name}">
-                            <input type="button" data-event="Action" data-mode="say" value="代表發言">
-                            <input type="button" data-event="Action" data-mode="vote"  value="投票">
-                            <input type="button" data-event="Action" data-mode="divine"  value="占卜">
-                            <input type="button" data-event="Action" data-mode="wolf"  value="咬殺">
-                            <input type="button" data-event="Action" data-mode="guard"  value="守衛">
-                            <input type="button" data-event="Log" value="記錄">
-                            <input type="button" value="${job||"???"}">
+                            <input ${dead} type="button" value="${a.name}">
+
+                            <input ${dead} type="button" data-event="Action" data-mode="say" value="代表發言">
+
+                            <input ${dead} type="button" data-event="Action" data-mode="vote" value="投票">
+
+                            <input ${dead} type="button" data-event="Action" data-mode="divine" value="占卜">
+
+                            <input ${dead} type="button" data-event="Action" data-mode="wolf"  value="咬殺">
+
+                            <input ${dead} type="button" data-event="Action" data-mode="guard" value="守衛">
+
+                            <input type="button" data-event="Log" value="發言記錄">
+
+                            <input ${dead} type="button" value="${job||"???"}">
+
+                            <div>
+                            ${info}
+                            </div>
                             
                         `;
 
                         Ex.obj.Main.querySelector("#Content").appendChild(player);
                     });
+
+                    Ex.f.ActionCheck();
+
+
+                    var chat = ``;
+                    /*
+                    for(var id in Ex.flag.npc)
+                    {
+                        var r = Ex.flag.npc[id].say||{};
+
+                        for(var day in r)
+                        {
+                            Object.values(r[day]).forEach(str=>{
+                                
+                                chat += `【${Ex.flag.npc[id].name}】：『${str}』(第${day-(-1)}天)\n`;
+
+                            });
+                        }
+                    }
+                    */
+
+
+                    for(var day=0;day<=Ex.flag.game_day;day++)
+                    {
+                        for(var id in Ex.flag.npc)
+                        {
+                            var r = Ex.flag.npc[id].say||{};
+
+                            Object.values(r[day]||{}).forEach(str=>{
+                                
+                                chat += `【${Ex.flag.npc[id].name}】：『${str}』(第${day-(-1)}天)\n`;
+
+                            });
+                        }
+                    }
+
+
+                    var textarea = Ex.obj.Main.querySelector("#Chat textarea");
+
+                    textarea.value = chat;
+                    textarea.scrollTo(0,textarea.scrollHeight);
+
+
                 });
 
+
+            },
+            "ActionCheck":()=>{
+
+                document.querySelectorAll(`[data-mode]`).forEach(obj=>{
+
+                    if(Ex.flag.player[Ex.flag.game_day]!==undefined)
+                    if(Ex.flag.player[Ex.flag.game_day][obj.dataset.mode]!==undefined)
+                    {
+                        obj.setAttribute("disabled","disabled");
+                    }
+                });
 
             },
             "Log":(e)=>{
 
                 var npc_id = e.target.parentElement.id;
-                var mode = "say";
                 var html = ``;
+                var r = Ex.flag.npc[npc_id].say||{};
 
-                Ex.DB.ref(`game/${Ex.flag.game_id}/npc/${npc_id}/${mode}`).once("value",r=>{
 
-                    r = r.val()||{};
-                    
-                    html = `<textarea style="height:${window.innerHeight/2}px">`;
+                html = `<textarea style="height:${window.innerHeight/2}px">`;
 
-                    for(var day in r)
-                    {
+                for(var day in r)
+                {
+                    Object.values(r[day]).forEach(str=>{
+                        
+                        html += `=======第${day-(-1)}天=======\n${str}\n`;
 
-                        Object.values(r[day]).forEach(str=>{
-                            
-                            html += `=======第${day-(-1)}天=======\n${str}\n`;
+                    });
+                }
 
-                        });
-                    }
+                html += `</textarea>
+                <input type="button" data-event="MsgShow" value="關閉">`;
+                Ex.f.MsgShow(html);
 
-                    html += `</textarea>
-                    <input type="button" data-event="MsgShow" value="關閉">`;
-                    Ex.f.MsgShow(html);
-
-                });
+                
 
             },
             "SelfLog":(e)=>{
@@ -361,7 +518,7 @@ var Ex;
                     var str = "";
 
                     if(data.npc_id!==undefined)
-                        str = `${Ex.flag.npc[data.npc_id].name}:「${data.str}」`;
+                        str = `代表${Ex.flag.npc[data.npc_id].name}發言\n「${data.str}」`;
                     else
                         str = Ex.flag.npc[data].name;
 
@@ -374,13 +531,17 @@ var Ex;
                 Ex.f.MsgShow(html);
 
 
-                console.log(e.target);
-
-
-                console.log( Ex.flag.player[e.target.dataset.day] );
-
             },
             "Action":(e)=>{
+
+                if(Ex.flag.end!==undefined)
+                {
+                    Ex.f.MsgShow(`
+                        此局遊戲結束,${Ex.config.str[Ex.flag.end]}側的勝利
+                        <input type="button" data-event="MsgShow" value="關閉">
+                    `);
+                    return;
+                }
 
                 var npc_id = e.target.parentElement.id;
                 var mode = e.target.dataset.mode;
@@ -398,15 +559,21 @@ var Ex;
                                 data-npc_id="${npc_id}" 
                                 data-game_day="${Ex.flag.game_day}"
                                 data-event="Say" 
-                                value="送出">`
+                                value="送出">
+                                <input type="button" data-event="MsgShow" value="關閉">`
                             );
 
                         }
                         else
                         {
+                            if(confirm(`確定要選【${Ex.flag.npc[npc_id].name}】為【${Ex.config.str["a_"+mode]}】目標嗎?\n(不可更改)`)===false) return;
+
+
                             Ex.DB.ref(`game/${Ex.flag.game_id}/npc/${npc_id}/${mode}/${Ex.flag.game_day}/${Ex.Storage.local.account.a}`).set(1);
 
                             Ex.DB.ref(`game/${Ex.flag.game_id}/player/${Ex.Storage.local.account.a}/${Ex.flag.game_day}/${mode}`).set(npc_id);
+
+                            location.reload();
                         }
                     }
 
@@ -421,6 +588,13 @@ var Ex;
                 var game_day = e.target.dataset.game_day;
                 var str = e.target.parentElement.querySelector("textarea").value;
 
+                if(str==="") return;
+
+                if(confirm(`確定要代表【${Ex.flag.npc[npc_id].name}】發言嗎?\n(不可更改)`)===false) return;
+
+
+
+
                 Ex.DB.ref(`game/${Ex.flag.game_id}/player/${Ex.Storage.local.account.a}/${game_day}/${mode}`).once("value",r=>{
 
                     if(r.val()===null)
@@ -432,7 +606,9 @@ var Ex;
                             "str":str
                         });
 
-                        Ex.obj.Msg.setAttribute("hide","");
+                        //Ex.obj.Msg.setAttribute("hide","");
+
+                        location.reload();
                     }
                     
                 });
@@ -440,60 +616,154 @@ var Ex;
             },
             "_Next":()=>{
 
-                var total = {
-                    "vote":{},
-                    "guard":{},
-                    "divine":{},
-                    "wolf":{}
-                };
+                Ex.f.AdminCheck(()=>{
 
-                Ex.DB.ref(`game/${Ex.flag.game_id}`).once("value",r=>{
+                    if(Ex.flag.end!==undefined)
+                    {
+                        Ex.f.MsgShow(`
+                            此局遊戲結束【${Ex.config.str[Ex.flag.end]}】方的勝利
+                            <input type="button" data-event="MsgShow" value="關閉">
+                        `);
+                        return;
+                    }
 
-                    r = r.val();
+                    var total = {
+                        "vote":{},
+                        "guard":{},
+                        "divine":{},
+                        "wolf":{}
+                    };
 
-                    r.npc.forEach((npc,id)=>{
+                    Ex.DB.ref(`game/${Ex.flag.game_id}`).once("value",r=>{
+
+                        r = r.val();
+
+                        r.npc.forEach((npc,id)=>{
+
+                            for(var key in total)
+                            {
+                                if(npc[key]!==undefined)
+                                {
+                                    if(npc[key][Ex.flag.game_day]!==undefined)
+                                    {
+                                        total[key][ id ] = Object.keys( npc[key][Ex.flag.game_day] ).length;
+                                    }
+                                }
+                            }
+
+                        });
+
+                        var _max = {};
 
                         for(var key in total)
                         {
-                            if(npc[key]!==undefined)
+                            _max[key] = Math.max( ...Object.values(total[key]) );
+                        }
+                        console.log(total);
+                        console.log(_max);
+
+                        var _target = {};
+
+                        for(var key in total)
+                        {
+                            _target[key] = _target[key]||[];
+
+                            for(var npc in total[key])
                             {
-                                if(npc[key][Ex.flag.game_day]!==undefined)
+                                if(total[key][npc]===_max[key])
                                 {
-                                    total[key][ id ] = Object.keys( npc[key][Ex.flag.game_day] ).length;
+                                    _target[key].push(npc);
                                 }
                             }
                         }
 
-                    });
+                        console.log(_target);
+                    
 
-                    var _max = {};
-
-                    for(var key in total)
-                    {
-                        _max[key] = Math.max( ...Object.values(total[key]) );
-                    }
-                    console.log(total);
-                    console.log(_max);
-
-                    var _target = {};
-
-                    for(var key in total)
-                    {
-                        _target[key] = _target[key]||[];
-
-                        for(var npc in total[key])
+                        for(var key in _target)
                         {
-                            if(total[key][npc]===_max[key])
+                            if(_target[key].length===0)
                             {
-                                _target[key].push(npc);
+                                for(var id in Ex.flag.npc)
+                                {
+                                    if(Ex.flag.npc[id].dead===undefined)
+                                        _target[key].push(id);
+                                }
+                            }
+
+                            if(_target[key].length>1)
+                            {
+                                _target[key] = _target[key].splice(
+                                    Math.floor(_target[key].length * Math.random())
+                                    ,1);
                             }
                         }
-                    }
 
-                    console.log(_target);
+                        if( Ex.flag.npc[ _target.wolf[0] ].job==="wolf" || 
+                        _target.wolf[0]===_target.vote[0] )
+                        {
+                            var wolf_other = [];
+                            for(var id in Ex.flag.npc)
+                            {
+                                if(Ex.flag.npc[id].dead===undefined && 
+                                    Ex.flag.npc[id].job!=="wolf" && 
+                                    id!==_target.vote[0])
+                                    wolf_other.push(id);
+                            }
+
+                            _target.wolf = wolf_other.splice(
+                                Math.floor(wolf_other.length * Math.random())
+                                ,1);
+                        }
+
+
+                        Ex.flag.npc[ _target.vote[0] ].dead = {
+                            "type":"vote",
+                            "day":Ex.flag.game_day
+                        }
+
+
+                        
+                        for(var id in Ex.flag.npc)
+                        {
+                            if(Ex.flag.npc[id].job==="guard" && Ex.flag.npc[id].dead!==undefined) _target.guard[0] = "";
+
+                            if(Ex.flag.npc[id].job==="divine" && Ex.flag.npc[id].dead!==undefined) _target.divine[0] = "";
+                        }
+
+                        
+                        if(_target.guard[0]!==_target.wolf[0])
+                            Ex.flag.npc[ _target.wolf[0] ].dead = {
+                                "type":"wolf",
+                                "day":Ex.flag.game_day
+                            }
+
+                        Ex.flag.log = {};
+
+                        Ex.flag.log[ Ex.flag.game_day ] = {
+                            "wolf":_target.wolf[0],
+                            "divine":_target.divine[0],
+                            "guard":_target.guard[0],
+                            "vote":_target.vote[0]
+                        }
+
+                        console.log(Ex.flag.log);
+
+                        Ex.DB.ref(`game/${Ex.flag.game_id}/npc`).update( Ex.flag.npc );
+                        Ex.DB.ref(`game/${Ex.flag.game_id}/log`).update( Ex.flag.log );
+                        Ex.DB.ref(`game/${Ex.flag.game_id}/day`).set(Ex.flag.game_day-(-1));
+
+                        location.reload();
+                    });
+
 
                 });
+            },
+            "LogoOut":()=>{
 
+                delete localStorage[Ex.id];
+                
+                location.reload();
             },
             "AccountCheck":()=>{
 
@@ -509,6 +779,18 @@ var Ex;
                     <input type="password" placeholder="密碼" value="${(Ex.Storage.local.account)?Ex.Storage.local.account.p:""}">
                     <input type="button" data-event="LoginRegister" value="登入/註冊">`
                 );
+
+            },
+            "AdminCheck":(func)=>{
+
+                Ex.DB.ref(`admin/${Ex.Storage.local.account.a}`).once("value",r=>{
+
+                    if(r.val()==="on")
+                    {    
+                        func();
+                    }
+
+                });
 
             },
             "MsgShow":(html)=>{
@@ -547,7 +829,7 @@ var Ex;
                     {
                         if( CryptoJS.HmacSHA1(p,a).toString( CryptoJS.enc.Base64 )!==r.val().p && p!==r.val().p)
                         {
-                            console.log("pass error");
+                            alert("密碼錯誤");
                             return;
                         }
 
