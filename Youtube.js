@@ -304,17 +304,20 @@
                 data-event="ClickEvent" data-mode="SpeechRecord">即時字幕</div>
                 <div class="ytp-menuitem-content" 
                 data-event="ClickEvent" data-mode="SpeechRecord">
-                <div class="ytp-menuitem-toggle-checkbox" data-event="ClickEvent" data-mode="SpeechRecord"></div>
                 </div>
                 </div>
                 `
+
+                /*
+                <div class="ytp-menuitem-toggle-checkbox" data-event="ClickEvent" data-mode="SpeechRecord"></div>
+                */
 
 
                 if(typeof(webkitSpeechRecognition)!=="undefined")
                 {
                     Ex.obj.SpeechRecord = document.createElement("div");
                     Ex.obj.SpeechRecord.id = "SpeechRecord";
-                    Ex.obj.SpeechRecord.style.display = "block";
+                    Ex.obj.SpeechRecord.style.display = "none";
                     Ex.obj.SpeechRecord.setAttribute("draggable","true");
                     Ex.obj.SpeechRecord.dataset.r_event = "SpeechRecordMenu";
 
@@ -626,7 +629,7 @@
                             r.start();
                         },1000);
                 }
-                r.start();
+                //r.start();
 
                 Ex.obj.msg.style.display = "none";
 
