@@ -1,10 +1,11 @@
+var Ex;
 (()=>{
     if(location.host!=="www.plurk.com")
     {
         document.querySelector(`[src^="https://kfsshrimp.github.io/js/Plurk.js"]`).remove();
         return;
     }
-    var Ex = {
+    Ex = {
         "OtherExSet":(ExName)=>{
             var js = document.createElement("script");
             js.src =  `https://kfsshrimp.github.io/plurk/${ExName}.js?s=${new Date().getTime()}`;
@@ -147,6 +148,23 @@
             },
             "plurk_obj_set":()=>{
 
+
+
+                Ex.obj.vote_btn = document.createElement("div");
+                Ex.obj.vote_btn.className = "submit_img submit_img_color";
+                Ex.obj.vote_btn.style.fontSize = "20px";
+                Ex.obj.vote_btn.innerHTML = "發噗統計";
+
+                Ex.obj.vote_btn.dataset.event = "ClickEvent";
+                Ex.obj.vote_btn.dataset.mode = "PlurkInfo";
+
+                if( document.querySelector("#input_big")!==null)
+                {
+                    document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( Ex.obj.vote_btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
+                }
+
+
+                return;
                 
                 Ex.obj.vote_btn = document.createElement("div");
                 Ex.obj.vote_btn.className = "submit_img submit_img_color";
@@ -160,7 +178,6 @@
                 {
                     document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( Ex.obj.vote_btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
                 }
-
 
                 Ex.Clock.setInterval.GetVotePlurk = setInterval(()=>{
 
@@ -220,7 +237,6 @@
                             });
                         }
                     });
-                
 
                 },1000);
                 
@@ -458,7 +474,160 @@
                         */
                     break;
 
+                    case "PlurkInfo":
 
+                        var post_data_select = {
+                            "y":[],
+                            "m":[],
+                            "d":[]
+                        }
+                        for(var m=1;m<=12;m++) post_data_select.m.push(m.toString().padStart(2,'0'));
+                        for(var d=0;d<=31;d++) post_data_select.d.push(d.toString().padStart(2,'0'));
+
+                        var favorite_replurk = {
+                            "favorite":"喜歡",
+                            "replurk":"轉噗"
+                        };
+
+                        var sort = ``;
+                        for(var k in favorite_replurk)
+                        {
+                            sort += `<option value="${k}">${favorite_replurk[k]}</option>`;
+                        }
+
+
+
+
+
+                        for(var plurk_id in Ex.Storage.local.plurks)
+                        {
+                            var time = Ex.Storage.local.plurks[plurk_id][1];
+
+                            if(post_data_select["y"].indexOf(time.split("-")[0])===-1) post_data_select["y"].push(time.split("-")[0]);
+
+                            /*
+                            if(post_data_select["m"].indexOf(time.split("-")[1])===-1) post_data_select["m"].push(time.split("-")[1]);
+
+                            if(post_data_select["d"].indexOf(time.split("-")[2])===-1) post_data_select["d"].push(time.split("-")[2]);
+                            */
+                        }
+
+                        e =  new MouseEvent("click",{
+                            clientX: Math.floor(window.innerWidth/2),
+                            clientY: Math.floor(window.innerHeight/4)
+                        });
+                        
+
+                        Ex.f.MsgPop(`
+                        <div id="VoteOption">
+                        <div id="SearchOption">
+                        <select>${post_data_select.y.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===new Date().getFullYear().toString())?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                        <select>${post_data_select.m.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getMonth()+1).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                        <select>${post_data_select.d.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getDate()).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                        <select>${sort}</select>
+                        </div>
+                        
+                        <input data-flag="LocalPlurksCount" 
+                        type="button" value="統計數：${Object.keys(Ex.Storage.local.plurks).length}">
+                        <input 
+                        data-event="ClickEvent" 
+                        data-mode="ShowPlurkInfo"
+                        type="button" value="顯示統計">
+                        <input 
+                        data-event="ClickEvent" 
+                        data-mode="PlurkInfo"
+                        type="button" value="關閉統計">
+                        <input 
+                        data-event="ClickEvent" 
+                        data-mode="DelPlurkInfo"
+                        type="button" value="清除記錄">
+                        <div id="PlurkInfo">
+                        
+                        </div>
+                        </div>`,e);
+                    break;
+
+                    case "DelPlurkInfo":
+                        Ex.Storage.local.plurks = {};
+                        Ex.f.StorageUpd();
+                    break;
+
+                    case "ShowPlurkInfoDetail":
+                        var pid = e.target.dataset.pid;
+
+                        var detail_div = e.target.parentElement.parentElement.querySelectorAll("div")[0];
+
+                        if(detail_div.dataset.type==="text")
+                        {
+                            detail_div.innerHTML = Ex.Storage.local.plurks[pid]["4"];
+
+                            detail_div.dataset.type = "html";
+                        }
+                        else
+                        {
+                            detail_div.innerHTML = detail_div.innerText;
+
+                            detail_div.dataset.type = "text";
+                        }
+
+                    break;
+
+                    case "ShowPlurkInfo":
+
+                        var select_option = document.querySelectorAll("#SearchOption select");
+                        var search_plurks = [];
+
+                        for(let plurk_id in Ex.Storage.local.plurks)
+                        {
+                            let time = Ex.Storage.local.plurks[plurk_id][1];
+
+                            if(Ex.Storage.local.plurks[plurk_id][2].toString()==="0" || 
+                            Ex.Storage.local.plurks[plurk_id][3].toString()==="0") continue;
+
+                            if(time.split("-")[0]===select_option[0].value && 
+                            time.split("-")[1]===select_option[1].value && 
+                            (select_option[2].value==="00" ||  
+                            time.split("-")[2]===select_option[2].value) )
+                            {
+                                search_plurks.push( Ex.Storage.local.plurks[plurk_id] );
+                            }
+                        }
+
+                        console.log(select_option[3].value);
+                        if(select_option[3].value==="favorite")
+                            search_plurks.sort( (a,b)=>{return (b[2]!==a[2])?b[2] - a[2]:b[3] - a[3]});
+                        else
+                            search_plurks.sort( (a,b)=>{return (b[3]!==a[3])?b[3] - a[3]:b[2] - a[2]});
+
+                            
+                        document.querySelector("#PlurkInfo").innerHTML = ``;
+                        for(let ary of search_plurks)
+                        {
+                            let f_data = Ex.Storage.local.plurks[ary[0]];
+
+                            document.querySelector("#PlurkInfo").innerHTML += 
+                            `<div data-pid="${ary[0]}" class="plurkinfolist">
+                                <div data-type="text">
+                                    ${f_data[4]}
+                                </div>
+                                <hr>
+                                <div>
+                                    ${f_data[1]} / 喜歡：${f_data[2]} / 轉噗：${f_data[3]} / <a href="https://www.plurk.com/p/${parseInt(ary[0]).toString(36)}" target="_blank">PLURK</a> / <a 
+                                    data-event="ClickEvent" data-pid="${ary[0]}" 
+                                    data-mode="ShowPlurkInfoDetail">顯示</a>
+                                </div>
+                            </div>`;
+                        }
+
+                        document.querySelectorAll(".plurkinfolist").forEach(o=>{
+                            o.querySelectorAll("div")[0].innerHTML = 
+                            o.querySelectorAll("div")[0].innerText;
+
+                        });
+
+                        
+
+                    break;
                     
 
                 }
@@ -546,10 +715,49 @@
                 document.body.appendChild( Ex.obj.Ex_div );
                 document.body.appendChild( Ex.obj.msg );
                 document.body.appendChild( Ex.obj.menu );
+
+
+                 
+
+                /*
+                var js_a = [
+                    'https://kfsshrimp.github.io/sha1/core-min.js',
+                    'https://kfsshrimp.github.io/sha1/sha1-min.js',
+                    'https://kfsshrimp.github.io/sha1/hmac-min.js',
+                    'https://kfsshrimp.github.io/sha1/enc-base64-min.js',
+                    'https://kfsshrimp.github.io/plurk/api.js' 
+                ]                
+                for(var i in js_a){
+                    let j_src = js_a[i];
+
+                    setTimeout(()=>{
+                        var js = document.createElement("script");
+                        js.src = j_src;document.head.prepend(js);
+                    },(i+1)*100);
+
+                }
+                setTimeout(()=>{ 
+
+                    //Ex.Storage.session.plurks
+
+                    Ex.api = new PlurkApi();
+                    Ex.api.act = "Timeline/getPlurk"; // Timeline/getPlurkCountsInfo
+                    Ex.api.mode = "no"
+                    Ex.api.func = (r)=>{ 
+                        var r = JSON.parse(r.response);
+                        Ex.api.data = Ex.api.data||{};
+                        Ex.api.data[ r.plurk.plurk_id ] = r;
+                    }
+                },js_a.length*1000);
+                */
+
+
+
             },
             "FlagUpd":()=>{
                 document.querySelectorAll(`[data-flag]`).forEach(o=>{
                     o.innerHTML = Ex.flag[o.dataset.flag];
+                    o.value = Ex.flag[o.dataset.flag];
                 });
             },
             "StorageUpd":()=>{
@@ -578,12 +786,54 @@
             },
             "default":()=>{
 
+                Ex.Storage = {
+                    "local":JSON.parse(localStorage[Ex.id]||`{}`),
+                    "session":JSON.parse(sessionStorage[Ex.id]||`{}`)
+                }
 
-                /*
+
+                Ex.Storage.local.plurks = Ex.Storage.local.plurks||{};
+
+                
                 Ex.Clock.setInterval.flag = setInterval(()=>{
                     Ex.f.FlagUpd();
+
+                    Ex.flag.LocalPlurksCount = `記錄數：${Object.keys(Ex.Storage.local.plurks).length}`;
+
+                    if(GLOBAL.session_user!==null)
+                    {
+                        var new_data = false;
+                        document.querySelectorAll(`[data-pid][data-uid="${GLOBAL.session_user.uid}"]`).forEach(o=>{
+
+                            var pid = o.dataset.pid;
+                            var p_data = PlurksManager.getPlurkById(pid);
+
+                            if(p_data.favorite_count===0 || p_data.replurkers_count===0) return;
+    
+                            if(Ex.Storage.local.plurks[pid]===undefined)
+                            {
+                                Ex.Storage.local.plurks[pid] = [
+                                    pid,//0
+                                    `${p_data.posted.getFullYear()}-${(p_data.posted.getMonth()+1).toString().padStart(2,'0')}-${p_data.posted.getDate().toString().padStart(2,'0')}`,//1
+                                    p_data.favorite_count,//2
+                                    p_data.replurkers_count,//3
+                                    p_data.content
+                                ]
+
+                                new_data = true;
+                                console.log(pid);
+
+                                
+                            }
+                        });
+                        
+                        
+
+                        (new_data)?Ex.f.StorageUpd():"";
+                    }
+
                 },1000);
-                */
+
 
                 if(document.querySelectorAll(".plurkForm:not(.mini-mode) .submit_img").length>1)
                 {
@@ -632,10 +882,7 @@
                     }
                 });
 
-                Ex.Storage = {
-                    "local":JSON.parse(localStorage[Ex.id]||`{}`),
-                    "session":JSON.parse(sessionStorage[Ex.id]||`{}`)
-                }
+                
                 
                 Ex.f.style_set();
                 Ex.f.obj_set();
@@ -651,3 +898,22 @@
 
 
 //var js = document.createElement("script");js.src =  `https://kfsshrimp.github.io/plurk/YtScreenShot.js?s=${new Date().getTime()}`;document.head.prepend(js);
+
+
+/*
+
+
+ResponsesManager.loadResponses( parseInt('ophxn9',36) )
+ResponsesManager.loadOlderResponses( parseInt('ophxn9',36) , !0)
+ResponsesManager.getPlurkResponses( parseInt('ophxn9',36) )
+
+
+PlurkAdder.addPlurk({qualifier: ":",content:"test1" })
+PlurkAdder.addResponse( {plurk_id:parseInt("opmub0",36),owner_id:14556765},"test2",":")
+PlurkAdder.editPlurk({plurk_id:parseInt("opmub0",36),id:parseInt("opmub0",36)},"aaa")
+
+
+Poll.newPlurksPoll.getNewPlurks() //撈新消息噗
+Poll.newResponsesPoll.getUnreadPlurks() //撈未讀訊息噗
+
+*/
