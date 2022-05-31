@@ -798,7 +798,7 @@ var Ex;
                 Ex.Clock.setInterval.flag = setInterval(()=>{
                     Ex.f.FlagUpd();
 
-                    Ex.flag.LocalPlurksCount = `記錄數：${Object.keys(Ex.Storage.local.plurks).length}`;
+                    Ex.flag.LocalPlurksCount = `統計數：${Object.keys(Ex.Storage.local.plurks).length}`;
 
                     if(GLOBAL.session_user!==null)
                     {
@@ -808,7 +808,7 @@ var Ex;
                             var pid = o.dataset.pid;
                             var p_data = PlurksManager.getPlurkById(pid);
 
-                            if(p_data.favorite_count===0 || p_data.replurkers_count===0) return;
+                            if(p_data.favorite_count===0 && p_data.replurkers_count===0) return;
     
                             if(Ex.Storage.local.plurks[pid]===undefined)
                             {
