@@ -535,7 +535,7 @@ var Ex;
                         type="button" value="顯示統計">
                         <input 
                         data-event="ClickEvent" 
-                        data-mode="PlurkInfo"
+                        data-mode="ClosePlurkInfo"
                         type="button" value="關閉統計">
                         <input 
                         data-event="ClickEvent" 
@@ -552,6 +552,10 @@ var Ex;
                         Ex.f.StorageUpd();
                     break;
 
+                    case "ClosePlurkInfo":
+                        document.querySelector("#PlurkInfo").innerHTML = ``;
+                    break;
+
                     case "ShowPlurkInfoDetail":
                         var pid = e.target.dataset.pid;
 
@@ -559,9 +563,19 @@ var Ex;
 
                         if(detail_div.dataset.type==="text")
                         {
-                            detail_div.innerHTML = Ex.Storage.local.plurks[pid]["4"];
+                            //detail_div.innerHTML = Ex.Storage.local.plurks[pid]["4"];
+                            Ex.api.arg.plurk_id = pid;
+                            Ex.api.Send();
+                            console.log(Ex.api.data[pid]);
+                            detail_div.innerHTML = Ex.api.data[pid].plurk.content;
+
+                            
+                            Ex.Storage.local.plurks[pid]["2"] = Ex.api.data[pid].plurk.favorite_count;
+                            Ex.Storage.local.plurks[pid]["3"] = Ex.api.data[pid].plurk.replurkers_count;
 
                             detail_div.dataset.type = "html";
+
+                            Ex.f.StorageUpd();
                         }
                         else
                         {
@@ -721,7 +735,6 @@ var Ex;
 
                  
 
-                /*
                 var js_a = [
                     'https://kfsshrimp.github.io/sha1/core-min.js',
                     'https://kfsshrimp.github.io/sha1/sha1-min.js',
@@ -751,7 +764,6 @@ var Ex;
                         Ex.api.data[ r.plurk.plurk_id ] = r;
                     }
                 },js_a.length*1000);
-                */
 
 
 
@@ -819,7 +831,7 @@ var Ex;
                                     `${p_data.posted.getFullYear()}-${(p_data.posted.getMonth()+1).toString().padStart(2,'0')}-${p_data.posted.getDate().toString().padStart(2,'0')}`,//1
                                     p_data.favorite_count,//2
                                     p_data.replurkers_count,//3
-                                    p_data.content
+                                    o.querySelector(".text_holder").innerText//p_data.content
                                 ]
 
                                 new_data = true;
