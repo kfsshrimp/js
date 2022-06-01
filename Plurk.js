@@ -601,12 +601,14 @@ var Ex;
 
                             
                         document.querySelector("#PlurkInfo").innerHTML = ``;
+                        var no = 1;
                         for(let ary of search_plurks)
                         {
                             let f_data = Ex.Storage.local.plurks[ary[0]];
 
                             document.querySelector("#PlurkInfo").innerHTML += 
                             `<div data-pid="${ary[0]}" class="plurkinfolist">
+                            ${no++}<BR>
                                 <div data-type="text">
                                     ${f_data[4]}
                                 </div>
