@@ -399,8 +399,8 @@ var Ex;
                         Ex.f.MsgPop(`
                         <div id="VoteOption">
                         <div>
-                        <input type="text" placeholder="選項1"><span>*</span>
-                        <input type="text" placeholder="選項2"><span>*</span>
+                        <input type="text" placeholder="選項1"><span class="validate">*</span>
+                        <input type="text" placeholder="選項2"><span class="validate">*</span>
                         </div>
                         <input 
                         data-event="ClickEvent" 
@@ -513,8 +513,8 @@ var Ex;
                         }
 
                         e =  new MouseEvent("click",{
-                            clientX: Math.floor(window.innerWidth/2),
-                            clientY: Math.floor(window.innerHeight/4)
+                            clientX: 0,
+                            clientY: 0
                         });
                         
 
@@ -523,7 +523,7 @@ var Ex;
                         <div id="SearchOption">
                         <select>${post_data_select.y.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===new Date().getFullYear().toString())?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
                         <select>${post_data_select.m.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getMonth()+1).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
-                        <select>${post_data_select.d.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getDate()).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                        <select style="display:none;">${post_data_select.d.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getDate()).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
                         <select>${sort}</select>
                         </div>
                         
@@ -541,9 +541,10 @@ var Ex;
                         data-event="ClickEvent" 
                         data-mode="DelPlurkInfo"
                         type="button" value="清除記錄">
-                        <div id="PlurkInfo">
-                        
-                        </div>
+
+                        <div id="PlurkInfo"></div>
+
+
                         </div>`,e);
                     break;
 
@@ -554,34 +555,42 @@ var Ex;
 
                     case "ClosePlurkInfo":
                         document.querySelector("#PlurkInfo").innerHTML = ``;
+                        document.querySelector("#PlurkInfo").style.height = '0px';
                     break;
 
                     case "ShowPlurkInfoDetail":
                         var pid = e.target.dataset.pid;
 
                         var detail_div = e.target.parentElement.parentElement.querySelectorAll("div")[0];
+                        var detail_count_info = e.target.parentElement.parentElement.querySelectorAll("div")[1];
 
                         if(detail_div.dataset.type==="text")
                         {
+                            detail_div.dataset.type = "html";
+
                             //detail_div.innerHTML = Ex.Storage.local.plurks[pid]["4"];
                             Ex.api.arg.plurk_id = pid;
                             Ex.api.Send();
                             console.log(Ex.api.data[pid]);
                             detail_div.innerHTML = Ex.api.data[pid].plurk.content;
-
+                            
                             
                             Ex.Storage.local.plurks[pid]["2"] = Ex.api.data[pid].plurk.favorite_count;
                             Ex.Storage.local.plurks[pid]["3"] = Ex.api.data[pid].plurk.replurkers_count;
 
-                            detail_div.dataset.type = "html";
+                            detail_count_info.querySelector(".fav").innerHTML = Ex.api.data[pid].plurk.favorite_count;
+
+                            detail_count_info.querySelector(".rep").innerHTML = Ex.api.data[pid].plurk.replurkers_count;
+                            
 
                             Ex.f.StorageUpd();
                         }
                         else
                         {
-                            detail_div.innerHTML = detail_div.innerText;
-
                             detail_div.dataset.type = "text";
+
+                            detail_div.innerHTML = detail_div.innerText;
+                            
                         }
 
                     break;
@@ -598,10 +607,14 @@ var Ex;
                             if(Ex.Storage.local.plurks[plurk_id][2].toString()==="0" || 
                             Ex.Storage.local.plurks[plurk_id][3].toString()==="0") continue;
 
+                            /* select篩選 日
+
+                                (select_option[2].value==="00" ||  
+                                time.split("-")[2]===select_option[2].value) 
+                            */
+
                             if(time.split("-")[0]===select_option[0].value && 
-                            time.split("-")[1]===select_option[1].value && 
-                            (select_option[2].value==="00" ||  
-                            time.split("-")[2]===select_option[2].value) )
+                            time.split("-")[1]===select_option[1].value)
                             {
                                 search_plurks.push( Ex.Storage.local.plurks[plurk_id] );
                             }
@@ -615,6 +628,7 @@ var Ex;
 
                             
                         document.querySelector("#PlurkInfo").innerHTML = ``;
+                        document.querySelector("#PlurkInfo").style.height = `${(Math.floor(window.innerHeight*0.8))}px`;
                         var no = 1;
                         for(let ary of search_plurks)
                         {
@@ -628,18 +642,13 @@ var Ex;
                                 </div>
                                 <hr>
                                 <div>
-                                    ${f_data[1]} / 喜歡：${f_data[2]} / 轉噗：${f_data[3]} / <a href="https://www.plurk.com/p/${parseInt(ary[0]).toString(36)}" target="_blank">PLURK</a> / <a 
+                                    ${f_data[1]} / 喜歡：<span class="fav">${f_data[2]}</span> / 轉噗：<span class="rep">${f_data[3]}</span> / <a href="https://www.plurk.com/p/${parseInt(ary[0]).toString(36)}" target="_blank">PLURK</a> / <a 
                                     data-event="ClickEvent" data-pid="${ary[0]}" 
                                     data-mode="ShowPlurkInfoDetail">顯示</a>
                                 </div>
                             </div>`;
                         }
 
-                        document.querySelectorAll(".plurkinfolist").forEach(o=>{
-                            o.querySelectorAll("div")[0].innerHTML = 
-                            o.querySelectorAll("div")[0].innerText;
-
-                        });
 
                         
 
