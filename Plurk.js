@@ -45,7 +45,8 @@ var Ex;
             "vote_max":6,
             "fav_rep":{
                 "favorite":"喜歡",
-                "replurk":"轉噗"
+                "replurk":"轉噗",
+                "date":"日期"
             },
             "por_select":{
                 "no":"全部",
@@ -705,8 +706,10 @@ var Ex;
 
                         if(select_option.fav_rep.value==="favorite")
                             search_plurks.sort( (a,b)=>{return (b[2]!==a[2])?b[2] - a[2]:b[3] - a[3]});
-                        else
+                        else if(select_option.fav_rep.value==="replurk")
                             search_plurks.sort( (a,b)=>{return (b[3]!==a[3])?b[3] - a[3]:b[2] - a[2]});
+                        else
+                            search_plurks.sort( (a,b)=>{return b[0] - a[0]});
 
                             
                         document.querySelector("#PlurkInfo").innerHTML = ``;
@@ -821,7 +824,8 @@ var Ex;
                 Ex.obj.flashmsg.id = `${Ex.id}-FlashMsg`;
                 Ex.obj.flashmsg.setAttribute("draggable","true");
                 Ex.obj.flashmsg.innerHTML = `
-                <div data-event="close" data-obj="${Ex.id}-FlashMsg"></div>
+                <div></div>
+                <input type="button" data-event="close" data-obj="${Ex.id}-FlashMsg" value="關閉">
                 `;
 
                 Ex.obj.file = document.createElement("a");
@@ -948,6 +952,7 @@ var Ex;
                 
                 Ex.Clock.setInterval.flag = setInterval(()=>{
                     Ex.f.FlagUpd();
+                    
 
                     Ex.flag.LocalPlurksCount = `統計數：${Object.keys(Ex.Storage.local.plurks).length}`;
 
