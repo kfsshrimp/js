@@ -42,7 +42,19 @@ var Ex;
                 "height":80,
                 "width":80
             },
-            "vote_max":6
+            "vote_max":6,
+            "fav_rep":{
+                "favorite":"喜歡",
+                "replurk":"轉噗"
+            },
+            "por_select":{
+                "no":"全部",
+                "true":"成人",
+                "false":"非成人"
+            },
+            "fav_select":50,
+            "rep_select":50,
+            "flashmsgsec":5000
         },
         "template":{},
         "obj":{},
@@ -484,18 +496,30 @@ var Ex;
                         for(var m=1;m<=12;m++) post_data_select.m.push(m.toString().padStart(2,'0'));
                         for(var d=0;d<=31;d++) post_data_select.d.push(d.toString().padStart(2,'0'));
 
-                        var favorite_replurk = {
-                            "favorite":"喜歡",
-                            "replurk":"轉噗"
-                        };
 
-                        var sort = ``;
-                        for(var k in favorite_replurk)
+                        var fav_rep = ``;
+                        for(var k in Ex.config.fav_rep)
                         {
-                            sort += `<option value="${k}">${favorite_replurk[k]}</option>`;
+                            fav_rep += `<option value="${k}">${Ex.config.fav_rep[k]}</option>`;
                         }
 
+                        var por_select = ``;
+                        for(var k in Ex.config.por_select)
+                        {
+                            por_select += `<option value="${k}">${Ex.config.por_select[k]}</option>`;
+                        }
 
+                        var fav_select = '<option value="no">喜歡大於</option>';
+                        for(var i=1;i<=Ex.config.fav_select;i++)
+                        {
+                            fav_select += `<option>${i}</option>`;
+                        }
+
+                        var rep_select = '<option value="no">轉噗小於</option>';
+                        for(var i=0;i<=Ex.config.rep_select;i++)
+                        {
+                            rep_select += `<option>${i}</option>`;
+                        }
 
 
 
@@ -521,10 +545,13 @@ var Ex;
                         Ex.f.MsgPop(`
                         <div id="VoteOption">
                         <div id="SearchOption">
-                        <select>${post_data_select.y.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===new Date().getFullYear().toString())?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
-                        <select>${post_data_select.m.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getMonth()+1).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
-                        <select style="display:none;">${post_data_select.d.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getDate()).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
-                        <select>${sort}</select>
+                        <select id="y">${post_data_select.y.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===new Date().getFullYear().toString())?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                        <select id="m">${post_data_select.m.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getMonth()+1).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                        <select id="d" style="display:none;">${post_data_select.d.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getDate()).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                        <select title="排序" id="fav_rep">${fav_rep}</select>
+                        <select title="喜歡大於" id="fav_select">${fav_select}</select>
+                        <select title="轉噗小於" id="rep_select">${rep_select}</select>
+                        <select title="成人向" id="por_select">${por_select}</select>
                         </div>
                         
                         <input data-flag="LocalPlurksCount" 
@@ -533,14 +560,24 @@ var Ex;
                         data-event="ClickEvent" 
                         data-mode="ShowPlurkInfo"
                         type="button" value="顯示統計">
-                        <input 
+                        <!--<input 
                         data-event="ClickEvent" 
                         data-mode="ClosePlurkInfo"
                         type="button" value="關閉統計">
                         <input 
                         data-event="ClickEvent" 
                         data-mode="DelPlurkInfo"
-                        type="button" value="清除記錄">
+                        type="button" value="清除記錄">-->
+                        <input 
+                        data-event="ClickEvent" 
+                        data-mode="InPlurkInfo" 
+                        data-file="PlurkInfoFile" 
+                        type="button" value="載入記錄">
+                        <input id="PlurkInfoFile" type="file" style="display:none;">
+                        <input 
+                        data-event="ClickEvent" 
+                        data-mode="OutPlurkInfo"
+                        type="button" value="匯出記錄">
 
                         <div id="PlurkInfo"></div>
 
@@ -550,7 +587,43 @@ var Ex;
 
                     case "DelPlurkInfo":
                         Ex.Storage.local.plurks = {};
+                        Ex.Storage.session.plurks = {};
                         Ex.f.StorageUpd();
+                    break;
+
+                    case "OutPlurkInfo":
+
+                        Ex.obj.file.setAttribute('href',`data:text/plain;charset=utf-8,${encodeURIComponent(JSON.stringify(Ex.Storage.local.plurks))}`);
+                        Ex.obj.file.setAttribute('download','記錄檔');
+                        Ex.obj.file.click();
+                        
+                    break;
+
+                    case "InPlurkInfo":
+
+                        document.querySelector(`#${e.target.dataset.file}[type="file"]`).click();
+
+                        var reader = new FileReader();
+                        reader.onload = ()=>{
+
+                            Ex.Storage.local.plurks = JSON.parse(reader.result);
+                            Ex.f.StorageUpd();
+                            document.querySelector(`#Plurk-Msg`).style.display = "none";
+                        }
+
+                        var _t = setInterval(()=>{
+
+                            var files = document.querySelector(`#${e.target.dataset.file}[type="file"]`).files[0];
+
+                            if(!files) return;
+
+                            clearInterval(_t);
+    
+                            reader.readAsText(files);
+
+                        },100);
+                        
+
                     break;
 
                     case "ClosePlurkInfo":
@@ -597,14 +670,19 @@ var Ex;
 
                     case "ShowPlurkInfo":
 
-                        var select_option = document.querySelectorAll("#SearchOption select");
+                        var select_option = {};
+                        document.querySelectorAll("#SearchOption select").forEach(o=>{
+                            select_option[o.id] = o;
+                        });
+
                         var search_plurks = [];
 
                         for(let plurk_id in Ex.Storage.local.plurks)
                         {
-                            let time = Ex.Storage.local.plurks[plurk_id][1];
+                            let f_data = Ex.Storage.local.plurks[plurk_id];
+                            let time = f_data[1];
 
-                            if(Ex.Storage.local.plurks[plurk_id][2].toString()==="0" || 
+                            if(Ex.Storage.local.plurks[plurk_id][2].toString()==="0" &&  
                             Ex.Storage.local.plurks[plurk_id][3].toString()==="0") continue;
 
                             /* select篩選 日
@@ -613,22 +691,26 @@ var Ex;
                                 time.split("-")[2]===select_option[2].value) 
                             */
 
-                            if(time.split("-")[0]===select_option[0].value && 
-                            time.split("-")[1]===select_option[1].value)
+                            if(
+                                time.split("-")[0]===select_option.y.value && 
+                                time.split("-")[1]===select_option.m.value && 
+                                (parseInt(f_data[2])>=parseInt(select_option.fav_select.value) || select_option.fav_select.value==="no") && 
+                                (parseInt(f_data[3])<=parseInt(select_option.rep_select.value) || select_option.rep_select.value==="no") && 
+                                (select_option.por_select.value===f_data[5].toString() || select_option.por_select.value==="no")
+                            )
                             {
                                 search_plurks.push( Ex.Storage.local.plurks[plurk_id] );
                             }
                         }
 
-                        console.log(select_option[3].value);
-                        if(select_option[3].value==="favorite")
+                        if(select_option.fav_rep.value==="favorite")
                             search_plurks.sort( (a,b)=>{return (b[2]!==a[2])?b[2] - a[2]:b[3] - a[3]});
                         else
                             search_plurks.sort( (a,b)=>{return (b[3]!==a[3])?b[3] - a[3]:b[2] - a[2]});
 
                             
                         document.querySelector("#PlurkInfo").innerHTML = ``;
-                        document.querySelector("#PlurkInfo").style.height = `${(Math.floor(window.innerHeight*0.8))}px`;
+                        document.querySelector("#PlurkInfo").style.height = `${(Math.floor(window.innerHeight*0.7))}px`;
                         var no = 1;
                         for(let ary of search_plurks)
                         {
@@ -698,7 +780,7 @@ var Ex;
             "style_set":function(){
                 
                 var link = document.createElement('link');
-                link.href = `https://kfsshrimp.github.io/css/${Ex.id}.css`;
+                link.href = `https://kfsshrimp.github.io/css/${Ex.id}.css?s=${new Date().getTime()}`;
                 link.rel = 'stylesheet';
                 link.type = 'text/css';
                 document.head.prepend(link);
@@ -734,11 +816,24 @@ var Ex;
                 <div></div>
                 <div>LOADING...</div>
                 `;
+
+                Ex.obj.flashmsg = document.createElement("div");
+                Ex.obj.flashmsg.id = `${Ex.id}-FlashMsg`;
+                Ex.obj.flashmsg.setAttribute("draggable","true");
+                Ex.obj.flashmsg.innerHTML = `
+                <div data-event="close" data-obj="${Ex.id}-FlashMsg"></div>
+                `;
+
+                Ex.obj.file = document.createElement("a");
+                Ex.obj.file.id = `${Ex.id}-File`;
+
+
                 
                 //document.body.prepend( Ex.obj.load );
-
+                document.body.appendChild( Ex.obj.file );
                 document.body.appendChild( Ex.obj.Ex_div );
                 document.body.appendChild( Ex.obj.msg );
+                document.body.appendChild( Ex.obj.flashmsg );
                 document.body.appendChild( Ex.obj.menu );
 
 
@@ -749,7 +844,7 @@ var Ex;
                     'https://kfsshrimp.github.io/sha1/sha1-min.js',
                     'https://kfsshrimp.github.io/sha1/hmac-min.js',
                     'https://kfsshrimp.github.io/sha1/enc-base64-min.js',
-                    'https://kfsshrimp.github.io/plurk/api.js' 
+                    `https://kfsshrimp.github.io/plurk/api.js?s=${new Date().getTime()}`
                 ]                
                 for(var i in js_a){
                     let j_src = js_a[i];
@@ -762,7 +857,7 @@ var Ex;
                 }
                 setTimeout(()=>{ 
 
-                    //Ex.Storage.session.plurks
+                    
 
                     Ex.api = new PlurkApi();
                     Ex.api.act = "Timeline/getPlurk"; // Timeline/getPlurkCountsInfo
@@ -795,6 +890,38 @@ var Ex;
                 Ex.obj.msg.querySelector("div").innerHTML = str;
 
             },
+            "FlashMsgPop":(str,e = document.createEvent("mouseEvents"))=>{
+
+                clearTimeout(Ex.Clock.setTimeout.flashmsg);
+
+
+                var x = e.clientX,y = e.clientY;
+                
+
+                Ex.obj.flashmsg.style.left = `${x}px`;
+                Ex.obj.flashmsg.style.top = `${y}px`;
+
+                if(Ex.obj.flashmsg.style.display==="block")
+                {
+                    Ex.obj.flashmsg.querySelector("div").innerHTML += str;
+                }
+                else
+                {
+                    Ex.obj.flashmsg.style.display = "block";
+                    Ex.obj.flashmsg.querySelector("div").innerHTML = str;
+                }
+
+                
+
+                Ex.Clock.setTimeout.flashmsg = setTimeout(()=>{
+                    Ex.obj.flashmsg.style.opacity = 0;
+                    setTimeout(()=>{
+                        Ex.obj.flashmsg.style.display = "none";
+                        Ex.obj.flashmsg.style.opacity = 1;
+                    },1000);
+                },Ex.config.flashmsgsec);
+
+            },
             "close":(e)=>{
                 document.querySelector(`#${e.target.dataset.obj}`).style.display = "none";
             },
@@ -816,6 +943,7 @@ var Ex;
 
 
                 Ex.Storage.local.plurks = Ex.Storage.local.plurks||{};
+                Ex.Storage.session.plurks = Ex.Storage.session.plurks||{};
 
                 
                 Ex.Clock.setInterval.flag = setInterval(()=>{
@@ -825,37 +953,39 @@ var Ex;
 
                     if(GLOBAL.session_user!==null)
                     {
-                        var new_data = false;
                         document.querySelectorAll(`[data-pid][data-uid="${GLOBAL.session_user.uid}"]`).forEach(o=>{
 
                             var pid = o.dataset.pid;
                             var p_data = PlurksManager.getPlurkById(pid);
 
-                            if(p_data.favorite_count===0 && p_data.replurkers_count===0) return;
+                            if(
+                                (p_data.favorite_count===0 && 
+                                p_data.replurkers_count===0) || 
+                                Ex.Storage.local.plurks[pid]!==undefined
+                            ) return;
     
-                            if(Ex.Storage.local.plurks[pid]===undefined)
-                            {
-                                Ex.Storage.local.plurks[pid] = [
-                                    pid,//0
-                                    `${p_data.posted.getFullYear()}-${(p_data.posted.getMonth()+1).toString().padStart(2,'0')}-${p_data.posted.getDate().toString().padStart(2,'0')}`,//1
-                                    p_data.favorite_count,//2
-                                    p_data.replurkers_count,//3
-                                    o.querySelector(".text_holder").innerText//p_data.content
-                                ]
+                            Ex.Storage.local.plurks[pid] = [
+                                pid,//0
+                                `${p_data.posted.getFullYear()}-${(p_data.posted.getMonth()+1).toString().padStart(2,'0')}-${p_data.posted.getDate().toString().padStart(2,'0')}`,//1
+                                p_data.favorite_count,//2
+                                p_data.replurkers_count,//3
+                                o.querySelector(".text_holder").innerText,//p_data.content
+                                p_data.porn//5
+                            ];
 
-                                new_data = true;
-                                console.log(pid);
+                             console.log(pid);
 
-                                
-                            }
+                             Ex.f.FlashMsgPop(`<div class="plurkinfolist">${o.querySelector(".text_holder").innerText}<hr>
+                             <div>
+                             ${Ex.Storage.local.plurks[pid][1]} / 喜歡：<span class="fav">${Ex.Storage.local.plurks[pid][2]}</span> / 轉噗：<span class="rep">${Ex.Storage.local.plurks[pid][3]}</span> / <a href="https://www.plurk.com/p/${parseInt(pid).toString(36)}" target="_blank">PLURK</a>
+                             </div></div>`);
+                            
                         });
-                        
-                        
 
-                        (new_data)?Ex.f.StorageUpd():"";
+                        Ex.f.StorageUpd();
                     }
 
-                },1000);
+                },500);
 
 
                 if(document.querySelectorAll(".plurkForm:not(.mini-mode) .submit_img").length>1)
