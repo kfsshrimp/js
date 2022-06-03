@@ -55,7 +55,8 @@ var Ex;
             },
             "fav_select":50,
             "rep_select":50,
-            "flashmsgsec":5000
+            "flashmsgsec":5000,
+            "plurkinfolist_max":50
         },
         "template":{},
         "obj":{},
@@ -717,6 +718,8 @@ var Ex;
                         var no = 1;
                         for(let ary of search_plurks)
                         {
+                            if(no>Ex.config.plurkinfolist_max) break;
+
                             let f_data = Ex.Storage.local.plurks[ary[0]];
 
                             document.querySelector("#PlurkInfo").innerHTML += 
@@ -986,6 +989,31 @@ var Ex;
                              </div></div>`);
                             
                         });
+
+                        if(document.querySelector(".pop-window-view [data-pid]")!==null)
+                        {
+                            var o = document.querySelector(".pop-window-view [data-pid]");
+                            var pid = document.querySelector(".pop-window-view [data-pid]").dataset.pid;
+
+                            var p_data = PlurksManager.getPlurkById(pid);
+
+                            if(
+                                (p_data.favorite_count!==0 || 
+                                p_data.replurkers_count!==0 ) && 
+                                Ex.Storage.local.plurks[pid]!==undefined
+                            ){
+                                Ex.Storage.local.plurks[pid] = [
+                                    pid,//0
+                                    `${p_data.posted.getFullYear()}-${(p_data.posted.getMonth()+1).toString().padStart(2,'0')}-${p_data.posted.getDate().toString().padStart(2,'0')}`,//1
+                                    p_data.favorite_count,//2
+                                    p_data.replurkers_count,//3
+                                    o.querySelector(".text_holder").innerText,//p_data.content
+                                    p_data.porn//5
+                                ];
+    
+                                console.log(`REF：${pid}`);
+                            }                            
+                        }
 
                         Ex.f.StorageUpd();
                     }
