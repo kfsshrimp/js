@@ -1,11 +1,11 @@
-var Ex;
+//var Ex;
 (()=>{
     if(location.host!=="www.plurk.com")
     {
         document.querySelector(`[src^="https://kfsshrimp.github.io/js/Plurk.js"]`).remove();
         return;
     }
-    Ex = {
+    var Ex = {
         "OtherExSet":(ExName)=>{
             var js = document.createElement("script");
             js.src =  `https://kfsshrimp.github.io/plurk/${ExName}.js?s=${new Date().getTime()}`;
@@ -55,7 +55,7 @@ var Ex;
             },
             "fav_select":50,
             "rep_select":50,
-            "flashmsgsec":5000,
+            "flashmsgsec":10*1000,
             "plurkinfolist_max":50
         },
         "template":{},
@@ -176,6 +176,50 @@ var Ex;
                 {
                     document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( Ex.obj.vote_btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
                 }
+
+                Ex.Clock.setInterval.GetVotePlurk = setInterval(()=>{
+
+                    
+                    document.querySelectorAll(`#cbox_response,#form_holder,#plurk_responses`).forEach(o=>{
+
+                        if(o.querySelector(`#response-search`)!==null)
+                        {
+                            if(o.id==="plurk_responses")
+                            {
+                                var mtop = window.scrollY - document.querySelector(".bigplurk").clientHeight;
+                                mtop = (mtop<0)?0:mtop;
+
+                                o.querySelector(`#response-search`).style.marginTop = mtop + 'px';
+                                o.querySelector(`#response-search`).style.right = '0px'
+                            }
+                            else
+                            {
+                                o.querySelector(`#response-search`).style.marginTop = o.querySelector(".response_box").scrollTop + 'px';
+                            }
+                        }
+                        else
+                        {
+
+
+                            var search_div = document.createElement("div");
+                            search_div.id = "response-search";
+                            search_div.innerHTML = `
+                            
+                                <input type="text" id="content" placeholder="內容">
+                                <input type="text" id="name" placeholder="暱稱(帳號)">
+                            `;
+
+                            o.querySelector(".response_info").prepend(search_div);
+                            
+                            search_div.querySelectorAll("input").forEach(input=>{
+
+                                input.addEventListener("keydown",Ex.f.ReplurkSearch);
+
+                            });
+                        }
+                    });
+
+                },1000);
 
 
                 return;
