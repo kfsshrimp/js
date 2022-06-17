@@ -781,8 +781,15 @@ var Ex;
                             </div>`;
                         }
 
+                    break;
 
+
+                    case "pet_food":
                         
+                        document.querySelector(".pop-view.pop-menu").remove();
+                        var ul = Ex.f.parentSearch(e.target,{"tag":"ul"});
+
+                        console.log( ul.querySelector(".pif-outlink") );
 
                     break;
                     
@@ -984,6 +991,34 @@ var Ex;
                     let j = Math.floor(Math.random() * (i + 1));
                     [ary[i], ary[j]] = [ary[j], ary[i]];
                 }
+            },
+            "parentSearch":(target,selector)=>{
+
+                var parent = target.parentElement;
+                selector.tag = selector.tag||'';
+                selector.class = selector.class||'';
+                selector.id = selector.id||'';
+
+
+                if(
+                    (
+                        selector.tag.toString().toUpperCase()===parent.tagName.toString().toUpperCase() && 
+                        selector.tag!==''
+                    ) || 
+                    (
+                        parent.className.split(" ").indexOf(selector.class)!==-1 && selector.class!==''
+                    ) || 
+                    (
+                        parent.id===selector.id && 
+                        selector.id!==''
+                    ) ||
+                        parent.tagName==="BODY"
+                    )
+                {
+                    return parent;
+                }
+
+                return Ex.f.parentSearch(parent,selector);
             },
             "default":()=>{
 
