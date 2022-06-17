@@ -1,9 +1,9 @@
-class PlurkEx_pet {
+class PlurkEx_Pet {
     
     constructor(){
 
         var Ex = {
-            "id":"PlurkEx_pet",
+            "id":"PlurkEx_Pet",
             "config":{},
             "obj":{},
             "f":{
