@@ -14,10 +14,10 @@ var Ex;
             var _t = setInterval(()=>{
                 if( (eval(`typeof(${ExName})`))!==undefined )
                 {
-                    Ex.OtherEx[ ExName ] = eval(`new ${ExName}()`);
+                    Ex.OtherEx[ ExName ] = eval(`new ${ExName}(Ex)`);
                     clearInterval(_t);
                 }
-            },1000)
+            },1000);
 
         },
         "OtherEx":{

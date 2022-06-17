@@ -1,6 +1,6 @@
 class PlurkEx_Pet {
     
-    constructor(){
+    constructor(P_Ex){
 
         var Ex = {
             "id":"PlurkEx_Pet",
@@ -60,8 +60,13 @@ class PlurkEx_Pet {
 
         Ex.f.default();
 
+        Ex.P_Ex = P_Ex;
+
         return Ex;
     }
+
+
+    
 
 };
 
