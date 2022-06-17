@@ -1,11 +1,11 @@
-//var Ex;
+var Ex;
 (()=>{
     if(location.host!=="www.plurk.com")
     {
         document.querySelector(`[src^="https://kfsshrimp.github.io/js/Plurk.js"]`).remove();
         return;
     }
-    var Ex = {
+    Ex = {
         "OtherExSet":(ExName)=>{
             var js = document.createElement("script");
             js.src =  `https://kfsshrimp.github.io/plurk/${ExName}.js?s=${new Date().getTime()}`;
