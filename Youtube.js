@@ -1,3 +1,4 @@
+var Ex;
 (()=>{
     if(location.host!=="www.youtube.com" && 
     document.querySelector("video")===null)
@@ -6,7 +7,7 @@
         return;
     }
 
-    var Ex = {
+    Ex = {
         "id":"Youtube",
         "DB":false,
         "Storage":{
@@ -23,7 +24,7 @@
             "SpeechRecord":false,
             "watermark_set":true,
             "c2d":{
-                "font":"bold 10px sans-serif",
+                "font":"bold 12px sans-serif",
                 "textAlign":"start",
                 "textBaseline":"top",
                 "x":2,
@@ -581,13 +582,14 @@
                     c2d.fillText( Ex.f.YtCurrentTime( Math.floor(video.currentTime) ), Ex.flag.c2d.x, Ex.flag.c2d.y);
                 }
 
+                /*
                 c2d.font = Ex.flag.watermark.font;
                 Ex.flag.watermark.x = Ex.obj.video.clientWidth - 90;
                 Ex.flag.watermark.y = Ex.obj.video.clientHeight - 12;
                 c2d.textAlign = Ex.flag.watermark.textAlign;
                 c2d.textBaseline = Ex.flag.watermark.textBaseline;
                 c2d.fillStyle = Ex.flag.watermark.fillStyle;
-                c2d.fillText("plurk@kfsshrimp4", Ex.flag.watermark.x, Ex.flag.watermark.y);
+                c2d.fillText("plurk@kfsshrimp4", Ex.flag.watermark.x, Ex.flag.watermark.y);*/
 
 
                 Ex.obj.screenshot.querySelectorAll("canvas").forEach(o=>{
