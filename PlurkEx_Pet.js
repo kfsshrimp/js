@@ -69,12 +69,20 @@ class PlurkEx_Pet {
                     Ex.P_Ex.Clock.setInterval.PLurkEx_Pet_Clock = setInterval(()=>{
 
                         var menu = document.querySelector(".pop-menu .pop-view-content ul");
+
                         if(menu!==null && menu.querySelector(`[data-event="ClickEvent"]`)===null)
                         {
-                            var li = document.createElement("li");
-                            li.innerHTML = `<li><a data-event="ClickEvent" data-mode="pet_food" class="">餵寵物</a></li>`;
+                            var pid = Ex.P_Ex.f.PlurkId(menu.querySelector("a[href]").toString().split("/").pop());
+                            console.log(pid);
+                            var plurk = PlurksManager.getPlurkById(pid);
 
-                            menu.appendChild(li);
+                            if(plurk.user_id===GLOBAL.session_user.uid)
+                            {
+                                var li = document.createElement("li");
+                                li.innerHTML = `<li><a data-event="ClickEvent" data-mode="pet_food" data-pid="${pid}" class="">餵寵物</a></li>`;
+    
+                                menu.appendChild(li);
+                            }
                         }
 
                     },1000);

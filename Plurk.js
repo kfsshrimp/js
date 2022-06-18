@@ -787,9 +787,29 @@ var Ex;
                     case "pet_food":
                         
                         document.querySelector(".pop-view.pop-menu").remove();
-                        var ul = Ex.f.parentSearch(e.target,{"tag":"ul"});
 
-                        console.log( ul.querySelector(".pif-outlink") );
+                        /*
+                        var ul = Ex.f.parentSearch(e.target,{"tag":"ul"});
+                        var pid = Ex.f.PlurkId( ul.querySelector(".pif-outlink").href.toString().split("/").pop() );
+                        */
+
+                        console.log(e.target);
+                        var plurk = document.body.querySelector(`[data-pid="${e.target.dataset.pid}"]`);
+                        var plurk_pos = plurk.getBoundingClientRect();
+
+                        Ex.OtherEx.PlurkEx_Pet.f.pet("move",{x:plurk_pos.x,y:plurk_pos.y+window.scrollY});
+
+                        //PlurksManager.getPlurkById
+
+                        plurk.style.opacity = 1;
+                        var _t = setInterval(()=>{
+                            plurk.style.opacity -= 0.1;
+                            if(plurk.style.opacity<=0) clearInterval(_t);
+                        },100);
+
+                        
+
+
 
                     break;
                     
@@ -1019,6 +1039,9 @@ var Ex;
                 }
 
                 return Ex.f.parentSearch(parent,selector);
+            },
+            "PlurkId":(pid)=>{
+                return (isNaN(parseInt(pid))) ? parseInt(pid,36) : parseInt(pid);
             },
             "default":()=>{
 
