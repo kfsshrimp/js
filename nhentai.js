@@ -4,7 +4,7 @@
     document.querySelectorAll(".reader-bar")[0].remove();
    
     setInterval(()=>{
-        document.querySelector("#image-container img").style.height = `${window.innerHeight}px`;
+        document.querySelector("#image-container img").style.maxHeight = `${window.innerHeight}px`;
         document.querySelector("#image-container img").removeAttribute("width");
     },1);
     
