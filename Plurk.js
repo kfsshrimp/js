@@ -444,6 +444,8 @@ var Ex;
             },
             "ClickEvent":(e)=>{
 
+                console.log(e);
+
                 switch (e.target.dataset.mode)
                 {
                     case "CreateVote":
@@ -784,7 +786,7 @@ var Ex;
                     break;
 
 
-                    case "pet_food":
+                    case "PetFood":
                         
                         document.querySelector(".pop-view.pop-menu").remove();
 
@@ -793,13 +795,13 @@ var Ex;
                         var pid = Ex.f.PlurkId( ul.querySelector(".pif-outlink").href.toString().split("/").pop() );
                         */
 
-                        console.log(e.target);
+                        Ex.Storage.local.Pet.hungry+=1;
+                        Ex.f.StorageUpd();
+
                         var plurk = document.body.querySelector(`[data-pid="${e.target.dataset.pid}"]`);
                         var plurk_pos = plurk.getBoundingClientRect();
 
                         Ex.OtherEx.PlurkEx_Pet.f.pet("move",{x:plurk_pos.x,y:plurk_pos.y+window.scrollY});
-
-                        //PlurksManager.getPlurkById
 
                         plurk.style.opacity = 1;
                         var _t = setInterval(()=>{
@@ -807,9 +809,28 @@ var Ex;
                             if(plurk.style.opacity<=0) clearInterval(_t);
                         },100);
 
+                    break;
+
+                    case "PetStatus":
+                        /*
+                        e =  new MouseEvent("click",{
+                            clientX: Math.floor(window.innerWidth/2),
+                            clientY: Math.floor(window.innerHeight/4)
+                        });*/
+
+                        e.preventDefault();
                         
+                        var weight = Ex.Storage.local.Pet.weight;
+                        var happy = Ex.Storage.local.Pet.happy;
+                        var hungry = Ex.Storage.local.Pet.hungry;
 
 
+                        Ex.f.MsgPop(`
+                        <div id="PetStatus">
+                        <div id="Weight" data-flag="PetWeight" style="background:linear-gradient(to right, #0f0 ${weight}% , #fff 0%);" title="體重">${weight}kg</div>
+                        <div id="Happy" data-flag="PetHappy"  style="background:linear-gradient(to right, #0f0 ${happy}% , #fff 0%);" title="好感度">${happy}</div>
+                        <div id="Hungry" data-flag="PetHungry"  style="background:linear-gradient(to right, #0f0 ${hungry}% , #fff 0%);" title="飽足度">${hungry}</div>
+                        </div>`,e);
 
                     break;
                     
@@ -1043,6 +1064,10 @@ var Ex;
             "PlurkId":(pid)=>{
                 return (isNaN(parseInt(pid))) ? parseInt(pid,36) : parseInt(pid);
             },
+            "Num36":(input)=>{
+                input =  isNaN(parseInt(input)) ? input:parseInt(input);
+                return (isNaN((input))) ? parseInt(input,36) : (input).toString(36);
+            },
             "default":()=>{
 
                 Ex.Storage = {
@@ -1057,7 +1082,9 @@ var Ex;
                 
                 Ex.Clock.setInterval.flag = setInterval(()=>{
                     Ex.f.FlagUpd();
-                    
+
+                    if(Ex.OtherEx.PlurkEx_Pet!==undefined)
+                        Ex.OtherEx.PlurkEx_Pet.f.PetClock();
 
                     Ex.flag.LocalPlurksCount = `統計數：${Object.keys(Ex.Storage.local.plurks).length}`;
 

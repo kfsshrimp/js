@@ -26,14 +26,25 @@ class PlurkEx_Pet {
 
                         default:
 
+                            Ex.P_Ex.Storage.local.Pet = Ex.P_Ex.Storage.local.Pet||{
+                                "weight":5.0,
+                                "happy":50,
+                                "hungry":50,
+                                "time":Ex.P_Ex.f.Num36( new Date().getTime() )
+                            };
+                            Ex.P_Ex.f.StorageUpd();
+                            
+
                             Ex.obj.petDiv = document.querySelector("#dynamic_logo");
+                            Ex.obj.petImg = Ex.obj.petDiv.querySelector("img");
 
                             setTimeout(()=>{
                                 Ex.obj.petDiv.style = `opacity: 0;`;
         
                                 setTimeout(()=>{
         
-                                    Ex.obj.petDiv.querySelector("img").src = "https://s.plurk.com/creatures/big/72e28d113423eccdc548.png";
+                                    Ex.obj.petImg.src = "https://s.plurk.com/creatures/big/72e28d113423eccdc548.png";
+
                                     Ex.obj.petDiv.style = `
                                         opacity:1;
                                         top: 0px;
@@ -41,12 +52,51 @@ class PlurkEx_Pet {
                                         z-index: 999999;
                                         cursor: grab;
                                     `;
+
+                                    //Ex.obj.petImg.dataset.event = "ClickEvent";
+                                    Ex.obj.petImg.dataset.r_event = "ClickEvent";
+                                    Ex.obj.petImg.dataset.mode = "PetStatus";
+
                                 },1000);
         
                             },100);
         
 
                         break;
+                    }
+                },
+                "PetClock":()=>{
+
+                    Ex.P_Ex.flag.PetWeight = Ex.P_Ex.Storage.local.Pet.weight+'kg';
+                    Ex.P_Ex.flag.PetHappy = Ex.P_Ex.Storage.local.Pet.happy;
+                    Ex.P_Ex.flag.PetHungry = Ex.P_Ex.Storage.local.Pet.hungry;
+
+                    var time = Ex.P_Ex.f.Num36(Ex.P_Ex.Storage.local.Pet.time);
+                    
+
+                    var pass_time = (new Date().getTime() - time) / 1000;
+                    if( pass_time >= 60 * 6 )
+                    {
+                        var count = Math.floor( pass_time  / 60 * 6 );
+
+                        Ex.P_Ex.Storage.local.Pet.happy-=count;
+                        Ex.P_Ex.Storage.local.Pet.hungry-=count;
+
+                        Ex.P_Ex.Storage.local.Pet.time = Ex.P_Ex.f.Num36( new Date().getTime() );
+
+                        
+
+                        Ex.P_Ex.f.StorageUpd();
+                    }
+
+                    if(document.querySelector("#PetStatus")!==null)
+                    {
+                        document.querySelector("#PetStatus #Weight").style = `background:linear-gradient(to right, #0f0 ${Ex.P_Ex.Storage.local.Pet.weight}% , #fff 0%);`;
+
+                        document.querySelector("#PetStatus #Happy").style = `background:linear-gradient(to right, #0f0 ${Ex.P_Ex.Storage.local.Pet.happy}% , #fff 0%);`;
+
+                        document.querySelector("#PetStatus #Hungry").style = `background:linear-gradient(to right, #0f0 ${Ex.P_Ex.Storage.local.Pet.hungry}% , #fff 0%);`;
+
                     }
                 },
                 default:()=>{
@@ -73,15 +123,16 @@ class PlurkEx_Pet {
                         if(menu!==null && menu.querySelector(`[data-event="ClickEvent"]`)===null)
                         {
                             var pid = Ex.P_Ex.f.PlurkId(menu.querySelector("a[href]").toString().split("/").pop());
-                            console.log(pid);
+                            
                             var plurk = PlurksManager.getPlurkById(pid);
+                            console.log(plurk);
 
-                            if(plurk.user_id===GLOBAL.session_user.uid)
+                            if(plurk.owner_id===GLOBAL.session_user.uid)
                             {
                                 var li = document.createElement("li");
-                                li.innerHTML = `<li><a data-event="ClickEvent" data-mode="pet_food" data-pid="${pid}" class="">餵寵物</a></li>`;
+                                li.innerHTML = `<li><a data-event="ClickEvent" data-mode="PetFood" data-pid="${pid}" class="">餵寵物</a></li>`;
     
-                                menu.appendChild(li);
+                                menu.prepend(li);
                             }
                         }
 
@@ -101,5 +152,6 @@ class PlurkEx_Pet {
 
 };
 
-var pet = new PlurkEx_Pet({"Clock":{"setInterval":{}}});
+//var pet = new PlurkEx_Pet({"Clock":{"setInterval":{}}});
 //var pet = new PlurkEx_pet();
+Ex.OtherEx.PlurkEx_Pet = new PlurkEx_Pet(Ex);
