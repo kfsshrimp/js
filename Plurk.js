@@ -785,8 +785,16 @@ var Ex;
 
                     break;
 
+                    case "Pet":
+
+                        Ex.OtherEx.PlurkEx_Pet.f.Pet(e);
+
+                    break;
+
 
                     case "PetFood":
+
+                        
                         
                         document.querySelector(".pop-view.pop-menu").remove();
 
@@ -794,6 +802,18 @@ var Ex;
                         var ul = Ex.f.parentSearch(e.target,{"tag":"ul"});
                         var pid = Ex.f.PlurkId( ul.querySelector(".pif-outlink").href.toString().split("/").pop() );
                         */
+                        var pid = e.target.dataset.pid;
+                        var plurk_info = PlurksManager.getPlurkById(pid);
+
+                        var pass_time = (new Date().getTime() - plurk_info.posted.getTime())/1000;
+
+                        if(pass_time>=3600 || plurk_info.posted.getTime()<Ex.f.Num36(Ex.Storage.local.Pet.time_food))
+                        {
+                            Ex.f.MsgPop(`飼料已過期`,e);
+                            return;
+                        }
+
+                        Ex.Storage.local.Pet.time_food = Ex.f.Num36(plurk_info.posted.getTime());
 
                         Ex.Storage.local.Pet.hungry+=1;
                         Ex.f.StorageUpd();
@@ -801,13 +821,17 @@ var Ex;
                         var plurk = document.body.querySelector(`[data-pid="${e.target.dataset.pid}"]`);
                         var plurk_pos = plurk.getBoundingClientRect();
 
-                        Ex.OtherEx.PlurkEx_Pet.f.pet("move",{x:plurk_pos.x,y:plurk_pos.y+window.scrollY});
 
-                        plurk.style.opacity = 1;
-                        var _t = setInterval(()=>{
-                            plurk.style.opacity -= 0.1;
-                            if(plurk.style.opacity<=0) clearInterval(_t);
-                        },100);
+
+                        Ex.OtherEx.PlurkEx_Pet.f.Pet("move",{x:plurk_pos.x,y:plurk_pos.y+window.scrollY});
+
+                        setTimeout(()=>{
+                            plurk.style.opacity = 1;
+                            var _t = setInterval(()=>{
+                                plurk.style.opacity -= 0.1;
+                                if(plurk.style.opacity<=0) clearInterval(_t);
+                            },100);
+                        },1000);
 
                     break;
 
@@ -989,7 +1013,7 @@ var Ex;
                 Ex.obj.msg.querySelector("div").innerHTML = str;
 
             },
-            "FlashMsgPop":(str,e = document.createEvent("mouseEvents"))=>{
+            "FlashMsgPop":(str,e = document.createEvent("mouseEvents"),sec = Ex.config.flashmsgsec)=>{
 
                 clearTimeout(Ex.Clock.setTimeout.flashmsg);
 
@@ -1018,7 +1042,7 @@ var Ex;
                         Ex.obj.flashmsg.style.display = "none";
                         Ex.obj.flashmsg.style.opacity = 1;
                     },1000);
-                },Ex.config.flashmsgsec);
+                },sec * 1000);
 
             },
             "close":(e)=>{
