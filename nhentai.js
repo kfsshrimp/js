@@ -1,4 +1,22 @@
-var sec = 5;
+var sec = 7;
+var NextClock;
+var Clock = ()=>{
+
+    console.log(sec);
+    NextClock = setInterval(()=>{
+
+        document.querySelector(".next").click();
+
+    },sec*1000);
+}
+
+function Sec(set)
+{
+    sec = set;
+    clearInterval(NextClock);
+
+    Clock();
+}
 (()=>{
     
     document.querySelector(".advt").remove();
@@ -9,9 +27,10 @@ var sec = 5;
         document.querySelector("#image-container img").removeAttribute("width");
     },1);
 
-    setInterval(()=>{
-        document.querySelector(".next").click();
-    },sec*1000);
+
+    Clock();
+
+    
     
 })();
 
