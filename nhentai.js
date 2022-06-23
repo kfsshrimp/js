@@ -7,6 +7,10 @@
         document.querySelector("#image-container img").style.maxHeight = `${window.innerHeight}px`;
         document.querySelector("#image-container img").removeAttribute("width");
     },1);
+
+    setInterval(()=>{
+        document.querySelector("#image-container img").click();
+    },5000);
     
 })();
 
