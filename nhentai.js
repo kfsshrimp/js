@@ -21,6 +21,30 @@ function Sec(set)
     
     document.querySelector(".advt").remove();
     document.querySelectorAll(".reader-bar")[0].remove();
+    document.querySelector(`[role="navigation"]`).remove();
+    document.querySelector(`#messages`).remove();
+    document.body.style.paddingTop = '0px';
+
+    window.scrollTo(0,0)
+
+    var s = document.createElement("select");
+    s.style = `
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1;
+    `;
+    for(var i=5;i<=10;i++)
+    {
+        s.innerHTML += `<option>${i}</option>`;
+    }
+    s.onchange = (e)=>{
+        Sec( e.target.value );
+    }
+
+    document.body.prepend(s);
+
+
    
     setInterval(()=>{
         document.querySelector("#image-container img").style.maxHeight = `${window.innerHeight}px`;
