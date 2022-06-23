@@ -14,7 +14,6 @@ function Sec(set)
 {
     sec = set;
     clearInterval(NextClock);
-
     Clock();
 }
 (()=>{
@@ -26,6 +25,11 @@ function Sec(set)
     document.body.style.paddingTop = '0px';
 
     window.scrollTo(0,0)
+    document.onkeyup = ()=>{
+        console.log('test');
+        clearInterval(NextClock);
+        Clock();
+    }
 
     var s = document.createElement("select");
     s.style = `
