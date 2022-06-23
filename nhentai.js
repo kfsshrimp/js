@@ -1,3 +1,4 @@
+var sec = 5;
 (()=>{
     
     document.querySelector(".advt").remove();
@@ -9,8 +10,8 @@
     },1);
 
     setInterval(()=>{
-        document.querySelector("#image-container img").click();
-    },5000);
+        document.querySelector(".next").click();
+    },sec*1000);
     
 })();
 
