@@ -34,7 +34,7 @@ function Sec(set)
     left: 0px;
     z-index: 1;
     `;
-    for(var i=5;i<=10;i++)
+    for(var i=5;i<=15;i++)
     {
         s.innerHTML += `<option>${i}</option>`;
     }
