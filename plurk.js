@@ -1,6 +1,6 @@
 var Ex;
 (()=>{
-    
+
     Ex = {
         "OtherExSet":(ExName)=>{
             var js = document.createElement("script");
@@ -166,7 +166,7 @@ var Ex;
                 Ex.obj.vote_btn.innerHTML = "發噗統計";
 
                 Ex.obj.vote_btn.dataset.event = "ClickEvent";
-                Ex.obj.vote_btn.dataset.mode = "PlurkInfo";
+                Ex.obj.vote_btn.dataset.mode = "plurkInfo";
 
                 if( document.querySelector("#input_big")!==null)
                 {
@@ -755,8 +755,8 @@ var Ex;
                             search_plurks.sort( (a,b)=>{return b[0] - a[0]});
 
                             
-                        document.querySelector("#PlurkInfo").innerHTML = ``;
-                        document.querySelector("#PlurkInfo").style.height = `${(Math.floor(window.innerHeight*0.7))}px`;
+                        document.querySelector("#plurkInfo").innerHTML = ``;
+                        document.querySelector("#plurkInfo").style.height = `${(Math.floor(window.innerHeight*0.7))}px`;
                         var no = 1;
                         for(let ary of search_plurks)
                         {
@@ -764,7 +764,7 @@ var Ex;
 
                             let f_data = Ex.Storage.local.plurks[ary[0]];
 
-                            document.querySelector("#PlurkInfo").innerHTML += 
+                            document.querySelector("#plurkInfo").innerHTML += 
                             `<div data-pid="${ary[0]}" class="plurkinfolist">
                             ${no++}<BR>
                                 <div data-type="text">
