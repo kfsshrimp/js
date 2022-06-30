@@ -36,16 +36,9 @@ function Page(next_page)
     document.querySelector(".tocaowrap").remove();
     document.querySelector(".newpagewrap").remove();
     document.querySelector(".footer.wrap").remove();
+
+    document.querySelector("#imgarea a").removeAttribute("href");
     
-
-
-    window.scrollTo(0,0)
-    document.onkeyup = ()=>{
-        console.log('test');
-        clearInterval(NextClock);
-        Clock();
-    }
-
     var s = document.createElement("select");
     s.style = `
     position: absolute;
@@ -95,4 +88,4 @@ function Page(next_page)
 
 
 
-//var js = document.createElement("script");js.src =  `https://kfsshrimp.github.io/js/web_comic.js?s=${new Date().getTime()}`;document.head.prepend(js);
+//var js = document.createElement("script");js.src =  `https://kfsshrimp.github.io/js/wnacg.js?s=${new Date().getTime()}`;document.head.prepend(js);
