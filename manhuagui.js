@@ -4,6 +4,7 @@
         "log":[]
     };
 
+    /*
 
     var comic_div = document.querySelector("#mangaBox").parentElement.parentElement.parentElement.parentElement.parentElement;
     var comic_td = document.querySelector("#mangaBox").parentElement;
@@ -20,14 +21,17 @@
 
     conic_page.style.display = 'inline-flex';
     conic_page.style.direction = 'rtl';
+    */
 
 
 
     setInterval(()=>{
 
+        /*
         document.querySelectorAll(".sitemaji_banner").forEach(o=>{
             o.remove();
         });
+        */
 
         document.querySelectorAll("img").forEach(o=>{
         
@@ -42,7 +46,8 @@
 
                 Ex.log.push(o);
             }
-            o.style.height = `${window.innerHeight-20}px`;
+
+            //o.style.height = `${window.innerHeight-20}px`;
 
             
         
