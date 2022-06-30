@@ -166,7 +166,7 @@ var Ex;
                 Ex.obj.vote_btn.innerHTML = "發噗統計";
 
                 Ex.obj.vote_btn.dataset.event = "ClickEvent";
-                Ex.obj.vote_btn.dataset.mode = "plurkInfo";
+                Ex.obj.vote_btn.dataset.mode = "PlurkInfo";
 
                 if( document.querySelector("#input_big")!==null)
                 {
@@ -623,7 +623,7 @@ var Ex;
                         data-mode="OutPlurkInfo"
                         type="button" value="匯出記錄">
 
-                        <div id="PlurkInfo"></div>
+                        <div id="plurkInfo"></div>
 
 
                         </div>`,e);
@@ -652,7 +652,7 @@ var Ex;
 
                             Ex.Storage.local.plurks = JSON.parse(reader.result);
                             Ex.f.StorageUpd();
-                            document.querySelector(`#Plurk-Msg`).style.display = "none";
+                            document.querySelector(`#plurk-Msg`).style.display = "none";
                         }
 
                         var _t = setInterval(()=>{
@@ -671,8 +671,8 @@ var Ex;
                     break;
 
                     case "ClosePlurkInfo":
-                        document.querySelector("#PlurkInfo").innerHTML = ``;
-                        document.querySelector("#PlurkInfo").style.height = '0px';
+                        document.querySelector("#plurkInfo").innerHTML = ``;
+                        document.querySelector("#plurkInfo").style.height = '0px';
                     break;
 
                     case "ShowPlurkInfoDetail":
