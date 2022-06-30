@@ -8,6 +8,5 @@
 
 
     console.log(`load：${js.src}`);
-    alert('差件載入成功');
 
 })();
