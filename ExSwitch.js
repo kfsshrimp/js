@@ -4,7 +4,8 @@
         "plurk",
         "youtube",
         "manhuagui",
-        "wnacg"
+        "wnacg",
+        "chobit"
     ];
 
     var domain = location.host.split(".");
