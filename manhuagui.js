@@ -25,6 +25,9 @@
 
     
     document.body.style.background = "#000";
+    document.querySelectorAll("a[href]").forEach(o=>{
+        o.style.color = "#fff";
+    });
 
 
     setInterval(()=>{
