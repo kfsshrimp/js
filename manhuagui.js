@@ -23,6 +23,8 @@
     conic_page.style.direction = 'rtl';
     */
 
+    
+    document.body.style.background = "#000";
 
 
     setInterval(()=>{
