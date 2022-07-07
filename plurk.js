@@ -1118,8 +1118,8 @@ var Ex;
 
                             if(
                                 (p_data.favorite_count===0 && 
-                                p_data.replurkers_count===0) || 
-                                Ex.Storage.local.plurks[pid]!==undefined
+                                p_data.replurkers_count===0) 
+                                //|| Ex.Storage.local.plurks[pid]!==undefined
                             ) return;
     
                             Ex.Storage.local.plurks[pid] = [
@@ -1245,7 +1245,7 @@ ResponsesManager.getPlurkResponses( parseInt('ophxn9',36) )
 
 
 PlurkAdder.addPlurk({qualifier: ":",content:"test1" })
-PlurkAdder.addResponse( {plurk_id:parseInt("opmub0",36),owner_id:14556765},"test2",":")
+PlurkAdder.addResponse( {plurk_id:parseInt("opmub0",36),owner_id:GLOBAL.session_user.uid},"test2",":")
 PlurkAdder.editPlurk({plurk_id:parseInt("opmub0",36),id:parseInt("opmub0",36)},"aaa")
 
 
