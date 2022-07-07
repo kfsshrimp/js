@@ -1133,10 +1133,12 @@ var Ex;
 
                              console.log(pid);
 
+                             /*
                              Ex.f.FlashMsgPop(`<div class="plurkinfolist">${o.querySelector(".text_holder").innerText}<hr>
                              <div>
                              ${Ex.Storage.local.plurks[pid][1]} / 喜歡：<span class="fav">${Ex.Storage.local.plurks[pid][2]}</span> / 轉噗：<span class="rep">${Ex.Storage.local.plurks[pid][3]}</span> / <a href="https://www.plurk.com/p/${parseInt(pid).toString(36)}" target="_blank">PLURK</a>
                              </div></div>`);
+                             */
                             
                         });
 
