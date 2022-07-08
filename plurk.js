@@ -898,7 +898,7 @@ var Ex;
                 Ex.f.plurk_obj_set();
 
 
-                Ex.f.OtherExSet("PlurkEx_Rank");
+                Ex.OtherExSet("PlurkEx_Rank");
                 
             }
         }
