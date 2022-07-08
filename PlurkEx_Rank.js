@@ -317,18 +317,18 @@ class PlurkEx_Rank {
                     Ex.f.style_set();
 
 
-                    P_Ex.obj.btn = document.createElement("div");
-                    P_Ex.obj.btn.className = "submit_img submit_img_color";
-                    P_Ex.obj.btn.style.fontSize = "20px";
-                    P_Ex.obj.btn.innerHTML = "發噗統計";
+                    Ex.obj.btn = document.createElement("div");
+                    Ex.obj.btn.className = "submit_img submit_img_color";
+                    Ex.obj.btn.style.fontSize = "20px";
+                    Ex.obj.btn.innerHTML = "發噗統計";
 
-                    P_Ex.obj.btn.dataset.other_ex = "PlurkEx_Rank";
-                    P_Ex.obj.btn.dataset.event = "ClickEvent";
-                    P_Ex.obj.btn.dataset.mode = "PlurkInfo";
+                    Ex.obj.btn.dataset.other_ex = "PlurkEx_Rank";
+                    Ex.obj.btn.dataset.event = "ClickEvent";
+                    Ex.obj.btn.dataset.mode = "PlurkInfo";
 
                     if( document.querySelector("#input_big")!==null)
                     {
-                        document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( P_Ex.obj.btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
+                        document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( Ex.obj.btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
                     }
 
 
@@ -404,6 +404,7 @@ class PlurkEx_Rank {
             }
         };
 
+        Ex.f.default();
 
         return Ex;
     }
@@ -412,4 +413,4 @@ class PlurkEx_Rank {
 
 //var pet = new PlurkEx_Pet({"Clock":{"setInterval":{}}});
 //var pet = new PlurkEx_pet();
-Ex.OtherEx.PlurkEx_Rank = new PlurkEx_Rank(Ex);
+//Ex.OtherEx.PlurkEx_Rank = new PlurkEx_Rank(Ex);
