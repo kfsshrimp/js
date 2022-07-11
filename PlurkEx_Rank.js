@@ -292,6 +292,7 @@ class PlurkEx_Rank {
                                     <hr>
                                     <div>
                                         ${f_data[1]} / 喜歡：<span class="fav">${f_data[2]}</span> / 轉噗：<span class="rep">${f_data[3]}</span> / <a href="https://www.plurk.com/p/${parseInt(ary[0]).toString(36)}" target="_blank">PLURK</a> / <a 
+                                        data-other_ex="PlurkEx_Rank" 
                                         data-event="ClickEvent" data-pid="${ary[0]}" 
                                         data-mode="ShowPlurkInfoDetail">顯示</a>
                                     </div>
