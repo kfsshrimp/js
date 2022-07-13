@@ -267,6 +267,15 @@ var Ex;
 
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
                 <div class="ytp-menuitem-icon" 
+                data-event="ClickEvent" data-mode="ClearImg"></div>
+                <div class="ytp-menuitem-label" 
+                data-event="ClickEvent" data-mode="ClearImg">清除截圖</div>
+                <div class="ytp-menuitem-content" 
+                data-event="ClickEvent" data-mode="ClearImg"></div>
+                </div>
+
+                <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
+                <div class="ytp-menuitem-icon" 
                 data-event="ClickEvent" data-mode="Video90"></div>
                 <div class="ytp-menuitem-label" 
                 data-event="ClickEvent" data-mode="Video90">影像90度</div>
@@ -384,9 +393,14 @@ var Ex;
 
                     break;
 
-
                     case "GetImg":
                         Ex.f.getImage();
+                    
+                        document.querySelector(".ytp-popup.ytp-contextmenu").style.display = "none";
+                    break;
+
+                    case "ClearImg":
+                        Ex.obj.screenshot.innerHTML = '';
                     
                         document.querySelector(".ytp-popup.ytp-contextmenu").style.display = "none";
                     break;
