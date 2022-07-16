@@ -105,7 +105,7 @@ class PlurkEx_Rank {
                             <select title="成人向" id="por_select">${por_select}</select>
                             </div>
                             
-                            <input data-flag="RankProgress" type="button" value="統計數：">
+                            <input data-flag="RankProgress" type="button" value="進度">
                             <input 
                             data-other_ex="PlurkEx_Rank" 
                             data-event="ClickEvent" 
@@ -265,8 +265,7 @@ class PlurkEx_Rank {
                         document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( Ex.obj.btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
                     }
 
-
-                    P_Ex.Storage.local.RankProgress = 'test';
+                    P_Ex.flag.RankProgress = '進度 %數';
 
                     P_Ex.f.StorageUpd();
                 }
