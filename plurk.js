@@ -3,9 +3,13 @@ var Ex;
 
     Ex = {
         "OtherExSet":(ExName)=>{
-            var js = document.createElement("script");
-            js.src =  `https://kfsshrimp.github.io/js/${ExName}.js?s=${new Date().getTime()}`;
-            document.head.prepend(js);
+
+            if( (eval(`typeof(${ExName})`))==='undefined' )
+            {
+                var js = document.createElement("script");
+                js.src =  `https://kfsshrimp.github.io/js/${ExName}.js?s=${new Date().getTime()}`;
+                document.head.prepend(js);
+            }
 
             var _t = setInterval(()=>{
                 if( (eval(`typeof(${ExName})`))!==undefined )
