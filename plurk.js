@@ -713,7 +713,7 @@ var Ex;
                     if( typeof(f)==="function" ) f();
 
 
-                },js_a.length*1000);
+                },js_a.length*800);
 
             },
             "obj_set":function(){

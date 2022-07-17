@@ -51,8 +51,7 @@ class PlurkEx_Rank {
 
                         if(r.plurks.length===0)
                         {
-                            document.querySelector(`[data-flag="RankProgress"]`).style.background = "linear-gradient(to right, #FF574D 100% , #fff5 0%)";
-                            P_Ex.flag.RankProgress = `${offset}期間搜尋完成,共0噗`;
+                            Ex.f.PlurkList(api.plurks);
                             return;
                         }
 
@@ -76,8 +75,6 @@ class PlurkEx_Rank {
                             {
                                 console.log('max end');
 
-                                document.querySelector(`[data-flag="RankProgress"]`).style.background = "linear-gradient(to right, #FF574D 100% , #fff5 0%)";
-                                P_Ex.flag.RankProgress = `${offset}期間搜尋完成,共${api.plurks.length}噗`;
                                 Ex.f.PlurkList(api.plurks);
                                 return;
                             }
@@ -107,9 +104,6 @@ class PlurkEx_Rank {
                         else
                         {
                             console.log('month end');
-
-                            document.querySelector(`[data-flag="RankProgress"]`).style.background = "linear-gradient(to right, #FF574D 100% , #fff5 0%)";
-                            P_Ex.flag.RankProgress = `${offset}期間搜尋完成,共${api.plurks.length}噗`;
                             
                             Ex.f.PlurkList(api.plurks);
                         }
@@ -186,7 +180,13 @@ class PlurkEx_Rank {
                         search_plurks.sort( (a,b)=>{return (b.replurkers_count!==a.replurkers_count)?b.replurkers_count - a.replurkers_count:b.favorite_count - a.favorite_count});
 
 
-                    
+                    var search_range = `${select_option.y.value}/${select_option.m.value}`;
+
+                    search_range += (select_option.d.value!=="00")?"/"+select_option.d.value:"";
+
+
+                    document.querySelector(`[data-flag="RankProgress"]`).style.background = "linear-gradient(to right, #FF574D 100% , #fff5 0%)";
+                    P_Ex.flag.RankProgress = `${search_range}期間搜尋完成,共${search_plurks.length}噗`;
 
                     //console.log(search_plurks);
 
@@ -230,8 +230,8 @@ class PlurkEx_Rank {
 
                 },
                 "ChangeEvent":(e)=>{
-                    console.log("OTHER EX");
-                    console.log(e);
+                    //console.log("OTHER EX");
+                    //console.log(e);
 
                     switch (e.target.dataset.mode)
                     {
@@ -248,12 +248,16 @@ class PlurkEx_Rank {
                 },
                 "ClickEvent":(e)=>{
 
-                    console.log("OTHER EX");
-                    console.log(e);
+                    //console.log("OTHER EX");
+                    //console.log(e);
 
                     switch (e.target.dataset.mode)
                     {
                         case "PlurkInfo":
+
+                            Ex.api.plurks = [];
+                            P_Ex.flag.page = 1
+
 
                             var post_data_select = {
                                 "y":[],
@@ -516,7 +520,7 @@ class PlurkEx_Rank {
                                 {
                                     page = now_page - 1;
                                 }
-                                console.log(page);
+
 
                                 if(page>Math.ceil(total/Ex.config.plurks_page) || 
                                     page*Ex.config.plurks_page<=0) return;
