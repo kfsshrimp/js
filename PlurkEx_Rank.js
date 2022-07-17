@@ -22,8 +22,8 @@ class PlurkEx_Rank {
                 "flashmsgsec":10*1000,
                 "plurkinfolist_max":2000,
                 "plurks_page":50,
-                "loop_safe_max":300,
-                "loop_sec":1000 * 0.5
+                "loop_safe_max":2000,
+                "loop_sec":1000 * 1
                 
             },
             "obj":{},
@@ -46,15 +46,23 @@ class PlurkEx_Rank {
                     
                     api.func = (r)=>{ 
                         api.plurks = api.plurks||[];
-                    
+
                         var r = JSON.parse(r.response);
+
+                        if(r.plurks.length===0)
+                        {
+                            document.querySelector(`[data-flag="RankProgress"]`).style.background = "linear-gradient(to right, #FF574D 100% , #fff5 0%)";
+                            P_Ex.flag.RankProgress = `${offset}期間搜尋完成,共0噗`;
+                            return;
+                        }
+
+
                         //console.log(api.arg.offset);
-                        console.log(r.plurks[0].posted + '=>' );
+                        console.log(r.plurks[0].posted  );
                     
                         api.plurks = api.plurks.concat(r.plurks);
                     
                         //console.log( new Date(api.plurks[api.plurks.length-1].posted).getMonth()+1 + '???' + new Date(offset).getMonth() );
-                        
                     
                         if(
                             r.plurks.length!==0 && 
@@ -67,17 +75,30 @@ class PlurkEx_Rank {
                             if(api.plurks.length>=Ex.config.loop_safe_max)
                             {
                                 console.log('max end');
-                                P_Ex.flag.RankProgress = '';
+
+                                document.querySelector(`[data-flag="RankProgress"]`).style.background = "linear-gradient(to right, #FF574D 100% , #fff5 0%)";
+                                P_Ex.flag.RankProgress = `${offset}期間搜尋完成,共${api.plurks.length}噗`;
                                 Ex.f.PlurkList(api.plurks);
                                 return;
                             }
                     
-                            console.log(api.plurks.length + '=>setTimeout');
+                            //console.log(api.plurks.length + '=>setTimeout');
 
                             setTimeout(()=>{
                                 
                                 if(api.plurks.length!==0)
                                 api.arg.offset = new Date( new Date(api.plurks[api.plurks.length-1].posted) ).toISOString();
+
+
+                                var total_d = new Date( new Date(api.arg.offset).getFullYear(),new Date(api.arg.offset).getMonth()+1 , 0 ).getDate();
+                                var d = new Date(api.arg.offset).getDate();
+
+                                //console.log(total_d,d);
+                                var progress = Math.floor( (total_d-d)/total_d * 100 );
+
+                                document.querySelector(`[data-flag="RankProgress"]`).style.background = `linear-gradient(to right, #FF574D ${progress}% , #fff5 0%)`;
+                                P_Ex.flag.RankProgress = `搜尋中,進度${progress}%`;
+
 
                                 api.Send();
                     
@@ -86,7 +107,9 @@ class PlurkEx_Rank {
                         else
                         {
                             console.log('month end');
-                            
+
+                            document.querySelector(`[data-flag="RankProgress"]`).style.background = "linear-gradient(to right, #FF574D 100% , #fff5 0%)";
+                            P_Ex.flag.RankProgress = `${offset}期間搜尋完成,共${api.plurks.length}噗`;
                             
                             Ex.f.PlurkList(api.plurks);
                         }
@@ -95,7 +118,7 @@ class PlurkEx_Rank {
 
                 },
                 "PageControl":(page,total)=>{
-                     console.log(page,total);
+                     //console.log(page,total);
 
 
                     document.querySelectorAll(`#page_bar [data-mode="PageChange"]`).forEach(o=>{
@@ -123,7 +146,7 @@ class PlurkEx_Rank {
                 },
                 "PlurkList":(plurks)=>{
 
-                    console.log(plurks);
+                    //console.log(plurks);
 
                     var search_plurks = [];
 
@@ -162,10 +185,10 @@ class PlurkEx_Rank {
                     else if(select_option.fav_rep.value==="replurk")
                         search_plurks.sort( (a,b)=>{return (b.replurkers_count!==a.replurkers_count)?b.replurkers_count - a.replurkers_count:b.favorite_count - a.favorite_count});
 
-                    document.querySelector("#plurkInfo").innerHTML = ``;
-                    document.querySelector("#plurkInfo").style.height = `${(Math.floor(window.innerHeight*0.7))}px`;
 
-                    console.log(search_plurks);
+                    
+
+                    //console.log(search_plurks);
 
                     document.querySelector("#page_bar").dataset.total = search_plurks.length;
 
@@ -202,6 +225,7 @@ class PlurkEx_Rank {
                         </div>`;
                     }
 
+                    document.querySelector("#plurkInfo").style.height = `${(Math.floor(window.innerHeight*0.7))}px`;
                     document.querySelector("#plurkInfo").innerHTML = html;
 
                 },
@@ -301,12 +325,12 @@ class PlurkEx_Rank {
                             </div>
                             
                             <input 
-                            style="linear-gradient(to right, #FF574D 40% , #fff5 0%);"
+                            style="background:linear-gradient(to right, #FF574D 100% , #fff5 0%);"
                             data-flag="RankProgress" 
                             data-other_ex="PlurkEx_Rank" 
                             data-event="ClickEvent" 
                             data-mode="ApiLoop"
-                            type="button" value="顯示統計">
+                            type="button" value="開始搜尋">
     
                             <div id="plurkInfo"></div>
 
@@ -319,7 +343,7 @@ class PlurkEx_Rank {
                             data-path="prev" 
                             type="button" value="上一頁">
 
-                            <input data-flag="page" type="button" value="第1頁">
+                            <input data-flag="page" type="button" value="1">
 
                             <input 
                             data-other_ex="PlurkEx_Rank" 
@@ -334,17 +358,13 @@ class PlurkEx_Rank {
 
                             document.querySelectorAll(`#SearchOption select`).forEach(o=>{
                                 o.addEventListener("change",(e)=>{
+
                                     P_Ex.f.ChangeEvent(e);
                                 });
                             });
 
                         break;
     
-
-                        case "ClosePlurkInfo":
-                            document.querySelector("#plurkInfo").innerHTML = ``;
-                            document.querySelector("#plurkInfo").style.height = '0px';
-                        break;
 
                         case "ShowPlurkInfoDetail":
                             var pid = e.target.dataset.pid;
@@ -385,19 +405,30 @@ class PlurkEx_Rank {
 
                         case "ApiLoop":
 
+                            Ex.api.plurks = [];
+                            P_Ex.flag.page = 1
+
+                            document.querySelector("#plurkInfo").innerHTML = ``;
+                            document.querySelector("#plurkInfo").style.height = '0px';
+                            document.querySelector("#page_bar").dataset.page = 1;
+
+                            document.querySelector(`[data-flag="RankProgress"]`).style.background = `linear-gradient(to right, #FF574D 0% , #fff5 0%)`;
+                            P_Ex.flag.RankProgress = `搜尋中,進度0%`;
+
+
                             var select_option = {};
                             document.querySelectorAll("#SearchOption select").forEach(o=>{
                                 select_option[o.id] = o;
                             });
 
-                            console.log(select_option);
+                            //console.log(select_option);
 
                             var offset = `${select_option.y.value}/${select_option.m.value}`;
 
                             if(select_option.d.value!=="00") offset += `/${select_option.d.value}`;
 
                            
-                            console.log(offset);
+                            //console.log(offset);
 
                             Ex.f.ApiLoop(offset);
 
@@ -521,7 +552,7 @@ class PlurkEx_Rank {
                     Ex.obj.btn = document.createElement("div");
                     Ex.obj.btn.className = "submit_img submit_img_color";
                     Ex.obj.btn.style.fontSize = "20px";
-                    Ex.obj.btn.innerHTML = "發噗統計";
+                    Ex.obj.btn.innerHTML = "搜尋外掛";
 
                     Ex.obj.btn.dataset.other_ex = "PlurkEx_Rank";
                     Ex.obj.btn.dataset.event = "ClickEvent";
@@ -532,7 +563,7 @@ class PlurkEx_Rank {
                         document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( Ex.obj.btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
                     }
 
-                    P_Ex.flag.RankProgress = '顯示統計 進度 %數';
+                    P_Ex.flag.RankProgress = '開始搜尋';
                     P_Ex.flag.page = 1;
 
                     Ex.api = P_Ex.api;

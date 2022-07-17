@@ -443,6 +443,8 @@ var Ex;
 
                         document.querySelector(`[data-mode="${e.target.dataset.mode}"][data-group="date"]`).innerHTML = date_html;
 
+                        
+
 
                     break;
                 }
