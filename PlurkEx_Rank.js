@@ -1,11 +1,4 @@
 
-function Test(e)
-{
-    console.log('terst');
-    console.log(this);
-    console.log(e);
-}
-
 class PlurkEx_Rank {
     
     constructor(P_Ex){
@@ -27,8 +20,9 @@ class PlurkEx_Rank {
                 "fav_select":50,
                 "rep_select":50,
                 "flashmsgsec":10*1000,
-                "plurkinfolist_max":50,
-                "loop_safe_max":2000,
+                "plurkinfolist_max":2000,
+                "plurks_page":50,
+                "loop_safe_max":150,
                 "loop_sec":1000 * 0.5
                 
             },
@@ -36,7 +30,7 @@ class PlurkEx_Rank {
             "f":{
                 "ApiLoop":(offset)=>{
 
-                    var api = new PlurkApi();
+                    var api = Ex.api;
                     Ex.api = api;
                     api.act = "Timeline/getPublicPlurks";
                     api.arg.minimal_data = "true";
@@ -65,7 +59,9 @@ class PlurkEx_Rank {
                         if(
                             r.plurks.length!==0 && 
                             new Date(api.plurks[api.plurks.length-1].posted).getMonth() === new Date(offset).getMonth() &&  
-                            new Date(api.plurks[api.plurks.length-1].posted).getDate() === new Date(offset).getDate() 
+                            (
+                                offset.split("/").length<3 || 
+                                new Date(api.plurks[api.plurks.length-1].posted).getDate() === new Date(offset).getDate() )
                             )
                         {
                             if(api.plurks.length>=Ex.config.loop_safe_max) {console.log('max end');Ex.f.PlurkList(api.plurks);return;}
@@ -89,6 +85,31 @@ class PlurkEx_Rank {
                         }
                     }
                     api.Send();
+
+                },
+                "PageControl":(page,total)=>{
+
+
+                    if(page>=Math.ceil(total/Ex.config.plurks_page))
+                    {
+                        document.querySelector(`#page_bar [data-path="next"]`).setAttribute("disabled","");
+                        document.querySelector(`#page_bar [data-path="prev"]`).removeAttribute("disabled");
+                    }
+
+                    if(page*Ex.config.plurks_page<=0)
+                    {
+                        document.querySelector(`#page_bar [data-path="prev"]`).setAttribute("disabled","");
+
+                        document.querySelector(`#page_bar [data-path="next"]`).removeAttribute("disabled");
+                    }
+
+                    if(total<=Ex.config.plurks_page)
+                    {
+                        document.querySelectorAll(`#page_bar [data-mode="PageChange"]`).forEach(o=>{
+                            o.setAttribute("disabled","");
+                        });
+                    }
+                    
 
                 },
                 "PlurkList":(plurks)=>{
@@ -137,15 +158,28 @@ class PlurkEx_Rank {
 
                     console.log(search_plurks);
 
-                    var no = 1;
+                    document.querySelector("#page_bar").dataset.total = search_plurks.length;
+
+                    var total = search_plurks.length;
+                    var page = document.querySelector("#page_bar").dataset.page;
+                    var html = ``;
+                    var no = 0;
+                    
+                    
+
+                    Ex.f.PageControl(page,total);
+
                     for(let f_data of search_plurks)
                     {
+                        no++;
+
                         if(no>Ex.config.plurkinfolist_max) break;
 
+                        if( (page-1)*Ex.config.plurks_page>=no || page*Ex.config.plurks_page<no ) continue;
 
-                        document.querySelector("#plurkInfo").innerHTML += 
+                        html += 
                         `<div data-pid="${f_data.plurk_id}" class="plurkinfolist">
-                        ${no++}<BR>
+                        ${no}<BR>
                             <div data-type="text">
                                 ${f_data.content}
                             </div>
@@ -159,8 +193,28 @@ class PlurkEx_Rank {
                         </div>`;
                     }
 
+                    document.querySelector("#plurkInfo").innerHTML = html;
+
+                },
+                "ChangeEvent":(e)=>{
+                    console.log("OTHER EX");
+                    console.log(e);
+
+                    switch (e.target.dataset.mode)
+                    {
+                        case "ReSearch":
+                            
+                            if(Ex.api.plurks!==undefined)
+                            {
+                                Ex.f.PlurkList(Ex.api.plurks);
+                            }
+
+                        break;
+                    }
+
                 },
                 "ClickEvent":(e)=>{
+
                     console.log("OTHER EX");
                     console.log(e);
 
@@ -228,26 +282,48 @@ class PlurkEx_Rank {
                             ${post_data_select.d.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getDate()).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}
                             </select>
 
-                            <select title="排序" id="fav_rep">${fav_rep}</select>
-                            <select title="喜歡大於" id="fav_select">${fav_select}</select>
-                            <select title="轉噗小於" id="rep_select">${rep_select}</select>
-                            <select title="成人向" id="por_select">${por_select}</select>
+                            <select data-other_ex="PlurkEx_Rank" data-mode="ReSearch" title="排序" id="fav_rep">${fav_rep}</select>
+
+                            <select data-other_ex="PlurkEx_Rank" data-mode="ReSearch" title="喜歡大於" id="fav_select">${fav_select}</select>
+
+                            <select data-other_ex="PlurkEx_Rank" data-mode="ReSearch" title="轉噗小於" id="rep_select">${rep_select}</select>
+
+                            <select data-other_ex="PlurkEx_Rank" data-mode="ReSearch" title="成人向" id="por_select">${por_select}</select>
                             </div>
                             
-                            <input style="linear-gradient(to right, #FF574D 10% , #fff5 0%);" data-flag="RankProgress" type="button" value="進度">
                             <input 
+                            style="linear-gradient(to right, #FF574D 40% , #fff5 0%);"
+                            data-flag="RankProgress" 
                             data-other_ex="PlurkEx_Rank" 
                             data-event="ClickEvent" 
                             data-mode="ApiLoop"
                             type="button" value="顯示統計">
     
                             <div id="plurkInfo"></div>
+
+                            <div id="page_bar" data-page="1" data-total="">
+
+                            <input 
+                            data-other_ex="PlurkEx_Rank" 
+                            data-event="ClickEvent" 
+                            data-mode="PageChange" 
+                            data-path="prev" 
+                            type="button" value="上一頁">
+
+                            <input data-flag="page" type="button" value="第1頁">
+
+                            <input 
+                            data-other_ex="PlurkEx_Rank" 
+                            data-event="ClickEvent" 
+                            data-mode="PageChange" 
+                            data-path="next" 
+                            type="button" value="下一頁">
+                            </div>
     
     
                             </div>`,e);
 
-                            document.querySelectorAll(`#SearchOption select#y,#SearchOption select#m`).forEach(o=>{
-
+                            document.querySelectorAll(`#SearchOption select`).forEach(o=>{
                                 o.addEventListener("change",(e)=>{
                                     P_Ex.f.ChangeEvent(e);
                                 });
@@ -382,6 +458,39 @@ class PlurkEx_Rank {
                             }
 
                             break;
+
+
+                            case "PageChange":
+
+                                var parent_obj = e.target.parentElement;
+                                var path = e.target.dataset.path;
+                                var total = parseInt(parent_obj.dataset.total);
+                                var now_page = parseInt(parent_obj.dataset.page);
+                                var page;
+
+                                if(path==="next")
+                                {
+                                    page = now_page + 1;
+                                }
+                                else if(path==="prev")
+                                {
+                                    page = now_page - 1;
+                                }
+                                console.log(page);
+
+                                if(page>Math.ceil(total/Ex.config.plurks_page) || 
+                                    page*Ex.config.plurks_page<=0) return;
+
+
+                                parent_obj.dataset.page = page;
+                                P_Ex.flag.page = page;
+
+                                Ex.f.PlurkList( Ex.api.plurks );
+
+                                Ex.f.PageControl(page,total);
+
+
+                            break;
                         }
 
 
@@ -414,7 +523,10 @@ class PlurkEx_Rank {
                         document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( Ex.obj.btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
                     }
 
-                    P_Ex.flag.RankProgress = '進度 %數';
+                    P_Ex.flag.RankProgress = '顯示統計 進度 %數';
+                    P_Ex.flag.page = 1;
+
+                    Ex.api = P_Ex.api;
 
                 }
             }

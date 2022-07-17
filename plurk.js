@@ -418,6 +418,12 @@ var Ex;
 
                 console.log(e);
 
+                if(e.target.dataset.other_ex!==undefined)
+                {
+                    Ex.OtherEx[ e.target.dataset.other_ex ].f.ChangeEvent(e);
+                    return;
+                }
+
                 switch (e.target.dataset.mode)
                 {
                     case "SearchDate":
@@ -672,6 +678,42 @@ var Ex;
                 link.type = 'text/css';
                 document.head.prepend(link);
             },
+            "js_set":(f)=>{
+                console.log('js_set_start');
+
+                var js_a = [
+                    'https://kfsshrimp.github.io/sha1/core-min.js',
+                    'https://kfsshrimp.github.io/sha1/sha1-min.js',
+                    'https://kfsshrimp.github.io/sha1/hmac-min.js',
+                    'https://kfsshrimp.github.io/sha1/enc-base64-min.js',
+                    `https://kfsshrimp.github.io/plurk/api.js?s=${new Date().getTime()}`
+                ]                
+                for(var i in js_a){
+                    let j_src = js_a[i];
+
+                    setTimeout(()=>{
+                        var js = document.createElement("script");
+                        js.src = j_src;document.head.prepend(js);
+                    },(i+1)*100);
+
+                }
+                setTimeout(()=>{ 
+
+                    Ex.api = new PlurkApi();
+                    Ex.api.act = "Timeline/getPlurk"; // Timeline/getPlurkCountsInfo
+                    Ex.api.mode = "no"
+                    Ex.api.func = (r)=>{ 
+                        var r = JSON.parse(r.response);
+                        Ex.api.data = Ex.api.data||{};
+                        Ex.api.data[ r.plurk.plurk_id ] = r;
+                    }
+
+                    if( typeof(f)==="function" ) f();
+
+
+                },js_a.length*1000);
+
+            },
             "obj_set":function(){
 
                 Ex.obj.Ex_div = document.createElement("div");
@@ -724,36 +766,6 @@ var Ex;
                 document.body.appendChild( Ex.obj.flashmsg );
                 document.body.appendChild( Ex.obj.menu );
 
-
-                 
-
-                var js_a = [
-                    'https://kfsshrimp.github.io/sha1/core-min.js',
-                    'https://kfsshrimp.github.io/sha1/sha1-min.js',
-                    'https://kfsshrimp.github.io/sha1/hmac-min.js',
-                    'https://kfsshrimp.github.io/sha1/enc-base64-min.js',
-                    `https://kfsshrimp.github.io/plurk/api.js?s=${new Date().getTime()}`
-                ]                
-                for(var i in js_a){
-                    let j_src = js_a[i];
-
-                    setTimeout(()=>{
-                        var js = document.createElement("script");
-                        js.src = j_src;document.head.prepend(js);
-                    },(i+1)*100);
-
-                }
-                setTimeout(()=>{ 
-
-                    Ex.api = new PlurkApi();
-                    Ex.api.act = "Timeline/getPlurk"; // Timeline/getPlurkCountsInfo
-                    Ex.api.mode = "no"
-                    Ex.api.func = (r)=>{ 
-                        var r = JSON.parse(r.response);
-                        Ex.api.data = Ex.api.data||{};
-                        Ex.api.data[ r.plurk.plurk_id ] = r;
-                    }
-                },js_a.length*1000);
 
 
 
@@ -930,13 +942,19 @@ var Ex;
                 });
 
                 
+                Ex.f.js_set( ()=>{
+                    console.log('js_set_end');
+
+                    Ex.f.style_set();
+                    Ex.f.obj_set();
+                    Ex.f.plurk_obj_set();
+    
+    
+                    Ex.OtherExSet("PlurkEx_Rank");
+
+                } );
+
                 
-                Ex.f.style_set();
-                Ex.f.obj_set();
-                Ex.f.plurk_obj_set();
-
-
-                Ex.OtherExSet("PlurkEx_Rank");
                 
             }
         }
