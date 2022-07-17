@@ -43,6 +43,7 @@ class PlurkEx_Rank {
                     api.arg.minimal_user = "true";
                     api.arg.nick_name = GLOBAL.session_user.nick_name;
                     api.arg.limit = "100";
+                    api.arg.only_user = "true";
                     api.mode = "no";
                     
                     api.arg.offset = (offset.split("/").length>=3)?new Date( new Date(offset).setHours(24+8) ).toISOString():new Date( new Date(offset).setMonth( new Date(offset).getMonth()+1 ) ).toISOString();
