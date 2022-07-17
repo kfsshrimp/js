@@ -3,9 +3,9 @@ var Ex;
 
     Ex = {
         "OtherExSet":(ExName)=>{
-            var js = document.createElement("script");
+            /*var js = document.createElement("script");
             js.src =  `https://kfsshrimp.github.io/js/${ExName}.js?s=${new Date().getTime()}`;
-            document.head.prepend(js);
+            document.head.prepend(js);*/
 
             var _t = setInterval(()=>{
                 if( (eval(`typeof(${ExName})`))!==undefined )
@@ -410,6 +410,37 @@ var Ex;
                 
 
             },
+            "ChangeEvent":(e)=>{
+
+                console.log(e);
+
+                switch (e.target.dataset.mode)
+                {
+                    case "SearchDate":
+                        if(e.target.dataset.group==="date") return;
+
+                        var y = document.querySelector(`[data-mode="${e.target.dataset.mode}"][data-group="year"]`).value;
+
+                        var m = document.querySelector(`[data-mode="${e.target.dataset.mode}"][data-group="month"]`).value;
+
+                        var d = new Date( y , m ,0).getDate();
+
+                        document.querySelector(`[data-mode="${e.target.dataset.mode}"][data-group="date"]`).innerHTML = ``;
+
+                        var date_html = '';
+
+                        for(var i=0;i<=d;i++) date_html+=`<option>${i.toString().padStart(2,'0')}</option>`;
+
+                        document.querySelector(`[data-mode="${e.target.dataset.mode}"][data-group="date"]`).innerHTML = date_html;
+
+
+                    break;
+                }
+
+
+
+
+            },
             "ClickEvent":(e)=>{
 
                 console.log(e);
@@ -710,8 +741,6 @@ var Ex;
                 }
                 setTimeout(()=>{ 
 
-                    
-
                     Ex.api = new PlurkApi();
                     Ex.api.act = "Timeline/getPlurk"; // Timeline/getPlurkCountsInfo
                     Ex.api.mode = "no"
@@ -815,6 +844,11 @@ var Ex;
                 }
 
                 return Ex.f.parentSearch(parent,selector);
+            },
+            "PlurkDate":(IOSDate)=>{
+
+                return `${new Date(IOSDate).getFullYear()}-${new Date(IOSDate).getMonth()+1}-${new Date(IOSDate).getDate()} ${new Date(IOSDate).getHours().toString().padStart(2,'0')}:${new Date(IOSDate).getMinutes().toString().padStart(2,'0')}:${new Date(IOSDate).getSeconds().toString().padStart(2,'0')}`
+
             },
             "PlurkId":(pid)=>{
                 return (isNaN(parseInt(pid))) ? parseInt(pid,36) : parseInt(pid);

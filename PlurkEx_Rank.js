@@ -1,5 +1,10 @@
 
-
+function Test(e)
+{
+    console.log('terst');
+    console.log(this);
+    console.log(e);
+}
 
 class PlurkEx_Rank {
     
@@ -22,11 +27,138 @@ class PlurkEx_Rank {
                 "fav_select":50,
                 "rep_select":50,
                 "flashmsgsec":10*1000,
-                "plurkinfolist_max":50
+                "plurkinfolist_max":50,
+                "loop_safe_max":2000,
+                "loop_sec":1000 * 0.5
                 
             },
             "obj":{},
             "f":{
+                "ApiLoop":(offset)=>{
+
+                    var api = new PlurkApi();
+                    Ex.api = api;
+                    api.act = "Timeline/getPublicPlurks";
+                    api.arg.minimal_data = "true";
+                    api.arg.minimal_user = "true";
+                    api.arg.nick_name = GLOBAL.session_user.nick_name;
+                    api.arg.limit = "100";
+                    api.mode = "no";
+                    
+                    api.arg.offset = (offset.split("/").length>=3)?new Date( new Date(offset).setHours(24+8) ).toISOString():new Date( new Date(offset).setMonth( new Date(offset).getMonth()+1 ) ).toISOString();
+                    
+                    console.log(api.arg.offset);
+                    
+                    api.func = (r)=>{ 
+                        api.plurks = api.plurks||[];
+                    
+                        var r = JSON.parse(r.response);
+                        //console.log(api.arg.offset);
+                        console.log(r.plurks[0].posted + '=>' );
+                    
+                        api.plurks = api.plurks.concat(r.plurks);
+                    
+                        //console.log( new Date(api.plurks[api.plurks.length-1].posted).getMonth()+1 + '???' + new Date(offset).getMonth() );
+                        
+                    
+                        if(
+                            r.plurks.length!==0 && 
+                            new Date(api.plurks[api.plurks.length-1].posted).getMonth() === new Date(offset).getMonth() &&  
+                            new Date(api.plurks[api.plurks.length-1].posted).getDate() === new Date(offset).getDate() 
+                            )
+                        {
+                            if(api.plurks.length>=Ex.config.loop_safe_max) {console.log('max end');Ex.f.PlurkList(api.plurks);return;}
+                    
+                            console.log(api.plurks.length + '=>setTimeout');
+                            setTimeout(()=>{
+                                
+                                if(api.plurks.length!==0)
+                                api.arg.offset = new Date( new Date(api.plurks[api.plurks.length-1].posted) ).toISOString();
+
+                                api.Send();
+                    
+                            },Ex.config.loop_sec);
+                        }
+                        else
+                        {
+                            console.log('month end');
+                            
+                            
+                            Ex.f.PlurkList(api.plurks);
+                        }
+                    }
+                    api.Send();
+
+                },
+                "PlurkList":(plurks)=>{
+
+                    console.log(plurks);
+
+                    var search_plurks = [];
+
+                    for(let i in plurks)
+                    {
+
+                        let f_data = plurks[i];
+                        let time = new Date(plurks[i].posted);
+
+                        var select_option = {};
+                        document.querySelectorAll("#SearchOption select").forEach(o=>{
+                            select_option[o.id] = o;
+                        });
+
+                        if(
+                            time.getFullYear().toString()===select_option.y.value && 
+
+                            (time.getMonth()+1).toString().padStart(2,'0')===select_option.m.value && 
+
+                            (select_option.d.value==="00" ||  
+                            time.getDate().toString().padStart(2,'0')===select_option.d.value) &&
+
+                            (parseInt(f_data.favorite_count)>=parseInt(select_option.fav_select.value) || select_option.fav_select.value==="no") && 
+
+                            (parseInt(f_data.replurkers_count)<=parseInt(select_option.rep_select.value) || select_option.rep_select.value==="no") && 
+
+                            (select_option.por_select.value===f_data.porn.toString() || select_option.por_select.value==="no")
+                        )
+                        {
+                            search_plurks.push( f_data );
+                        }
+                    }
+
+                    if(select_option.fav_rep.value==="favorite")
+                        search_plurks.sort( (a,b)=>{return (b.favorite_count!==a.favorite_count)?b.favorite_count - a.favorite_count:b.replurkers_count - a.replurkers_count});
+                    else if(select_option.fav_rep.value==="replurk")
+                        search_plurks.sort( (a,b)=>{return (b.replurkers_count!==a.replurkers_count)?b.replurkers_count - a.replurkers_count:b.favorite_count - a.favorite_count});
+
+                    document.querySelector("#plurkInfo").innerHTML = ``;
+                    document.querySelector("#plurkInfo").style.height = `${(Math.floor(window.innerHeight*0.7))}px`;
+
+                    console.log(search_plurks);
+
+                    var no = 1;
+                    for(let f_data of search_plurks)
+                    {
+                        if(no>Ex.config.plurkinfolist_max) break;
+
+
+                        document.querySelector("#plurkInfo").innerHTML += 
+                        `<div data-pid="${f_data.plurk_id}" class="plurkinfolist">
+                        ${no++}<BR>
+                            <div data-type="text">
+                                ${f_data.content}
+                            </div>
+                            <hr>
+                            <div>
+                                ${P_Ex.f.PlurkDate(f_data.posted)} / 喜歡：<span class="fav">${f_data.favorite_count}</span> / 轉噗：<span class="rep">${f_data.replurkers_count}</span> / <a href="https://www.plurk.com/p/${parseInt(f_data.plurk_id).toString(36)}" target="_blank">PLURK</a> / <a 
+                                data-other_ex="PlurkEx_Rank" 
+                                data-event="ClickEvent" data-pid="${f_data.plurk_id}" 
+                                data-mode="ShowPlurkInfoDetail">顯示</a>
+                            </div>
+                        </div>`;
+                    }
+
+                },
                 "ClickEvent":(e)=>{
                     console.log("OTHER EX");
                     console.log(e);
@@ -40,8 +172,10 @@ class PlurkEx_Rank {
                                 "m":[],
                                 "d":[]
                             }
+
+                            for(var y=new Date().getFullYear()-10;y<=new Date().getFullYear();y++) post_data_select.y.push(y.toString());
                             for(var m=1;m<=12;m++) post_data_select.m.push(m.toString().padStart(2,'0'));
-                            for(var d=0;d<=31;d++) post_data_select.d.push(d.toString().padStart(2,'0'));
+                            for(var d=0;d<=new Date( new Date().getFullYear() , new Date().getMonth()+1 ,0).getDate();d++) post_data_select.d.push(d.toString().padStart(2,'0'));
     
     
                             var fav_rep = ``;
@@ -69,20 +203,6 @@ class PlurkEx_Rank {
                             }
     
     
-    
-                            for(var plurk_id in P_Ex.Storage.local.plurks)
-                            {
-                                var time = P_Ex.Storage.local.plurks[plurk_id][1];
-    
-                                if(post_data_select["y"].indexOf(time.split("-")[0])===-1) post_data_select["y"].push(time.split("-")[0]);
-    
-                                /*
-                                if(post_data_select["m"].indexOf(time.split("-")[1])===-1) post_data_select["m"].push(time.split("-")[1]);
-    
-                                if(post_data_select["d"].indexOf(time.split("-")[2])===-1) post_data_select["d"].push(time.split("-")[2]);
-                                */
-                            }
-    
                             e =  new MouseEvent("click",{
                                 clientX: 0,
                                 clientY: 0
@@ -93,11 +213,19 @@ class PlurkEx_Rank {
                             <div id="VoteOption">
                             <div id="SearchOption">
 
-                            <select id="y">${post_data_select.y.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===new Date().getFullYear().toString())?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                            <select id="y" data-mode="SearchDate" 
+                            data-group="year">
+                            ${post_data_select.y.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===new Date().getFullYear().toString())?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}
+                            </select>
 
-                            <select id="m">${post_data_select.m.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getMonth()+1).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                            <select id="m" data-mode="SearchDate" data-group="month">
+                            ${post_data_select.m.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getMonth()+1).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}
+                            </select>
 
-                            <select id="d" style="display:none;">${post_data_select.d.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getDate()).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}</select>
+                            <select id="d" data-mode="SearchDate" 
+                            data-group="date">
+                            ${post_data_select.d.sort( (a,b)=>{return a-b;} ).map(v=>{return (v===(new Date().getDate()).toString().padStart(2,'0'))?`<option selected>${v}</option>`:`<option>${v}</option>`}).join(``)}
+                            </select>
 
                             <select title="排序" id="fav_rep">${fav_rep}</select>
                             <select title="喜歡大於" id="fav_select">${fav_select}</select>
@@ -105,17 +233,25 @@ class PlurkEx_Rank {
                             <select title="成人向" id="por_select">${por_select}</select>
                             </div>
                             
-                            <input data-flag="RankProgress" type="button" value="進度">
+                            <input style="linear-gradient(to right, #FF574D 10% , #fff5 0%);" data-flag="RankProgress" type="button" value="進度">
                             <input 
                             data-other_ex="PlurkEx_Rank" 
                             data-event="ClickEvent" 
-                            data-mode="ShowPlurkInfo"
+                            data-mode="ApiLoop"
                             type="button" value="顯示統計">
     
                             <div id="plurkInfo"></div>
     
     
                             </div>`,e);
+
+                            document.querySelectorAll(`#SearchOption select#y,#SearchOption select#m`).forEach(o=>{
+
+                                o.addEventListener("change",(e)=>{
+                                    P_Ex.f.ChangeEvent(e);
+                                });
+                            });
+
                         break;
     
 
@@ -161,7 +297,7 @@ class PlurkEx_Rank {
 
                         break;
 
-                        case "ShowPlurkInfo":
+                        case "ApiLoop":
 
                             var select_option = {};
                             document.querySelectorAll("#SearchOption select").forEach(o=>{
@@ -169,7 +305,19 @@ class PlurkEx_Rank {
                             });
 
                             console.log(select_option);
-                            return;
+
+                            var offset = `${select_option.y.value}/${select_option.m.value}`;
+
+                            if(select_option.d.value!=="00") offset += `/${select_option.d.value}`;
+
+                           
+                            console.log(offset);
+
+                            Ex.f.ApiLoop(offset);
+
+                        break;
+
+                        case "ShowPlurkInfo":
 
                             var search_plurks = [];
 
@@ -267,7 +415,6 @@ class PlurkEx_Rank {
 
                     P_Ex.flag.RankProgress = '進度 %數';
 
-                    P_Ex.f.StorageUpd();
                 }
             }
         };
