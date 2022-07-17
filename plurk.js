@@ -1,7 +1,6 @@
-var Ex;
 (()=>{
 
-    Ex = {
+    var Ex = {
         "OtherExSet":(ExName)=>{
 
             if( (eval(`typeof(${ExName})`))==='undefined' )
