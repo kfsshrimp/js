@@ -699,6 +699,28 @@ var Ex;
                     },(i+1)*100);
 
                 }
+
+                var _t = setInterval(()=>{
+                    
+                    if(typeof(PlurkApi)==="function")
+                    {
+                        Ex.api = new PlurkApi();
+                        Ex.api.act = "Timeline/getPlurk"; // Timeline/getPlurkCountsInfo
+                        Ex.api.mode = "no"
+                        Ex.api.func = (r)=>{ 
+                            var r = JSON.parse(r.response);
+                            Ex.api.data = Ex.api.data||{};
+                            Ex.api.data[ r.plurk.plurk_id ] = r;
+                        }
+
+                        if( typeof(f)==="function" ) f();
+
+                        clearInterval(_t);
+                    }
+
+                },500)
+
+                /*
                 setTimeout(()=>{ 
 
                     Ex.api = new PlurkApi();
@@ -711,9 +733,8 @@ var Ex;
                     }
 
                     if( typeof(f)==="function" ) f();
-
-
                 },js_a.length*800);
+                */
 
             },
             "obj_set":function(){
