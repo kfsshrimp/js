@@ -217,10 +217,7 @@ class PlurkEx_Rank {
                             </div>
                             <hr>
                             <div>
-                                ${P_Ex.f.PlurkDate(f_data.posted)} / 喜歡：<span class="fav">${f_data.favorite_count}</span> / 轉噗：<span class="rep">${f_data.replurkers_count}</span> / <a href="https://www.plurk.com/p/${parseInt(f_data.plurk_id).toString(36)}" target="_blank">PLURK</a> / <a 
-                                data-other_ex="PlurkEx_Rank" 
-                                data-event="ClickEvent" data-pid="${f_data.plurk_id}" 
-                                data-mode="ShowPlurkInfoDetail">顯示</a>
+                                ${P_Ex.f.PlurkDate(f_data.posted)} / 喜歡：<span class="fav">${f_data.favorite_count}</span> / 轉噗：<span class="rep">${f_data.replurkers_count}</span> / <a href="https://www.plurk.com/p/${parseInt(f_data.plurk_id).toString(36)}" target="_blank">PLURK</a>
                             </div>
                         </div>`;
                     }
@@ -370,43 +367,6 @@ class PlurkEx_Rank {
 
                         break;
     
-
-                        case "ShowPlurkInfoDetail":
-                            var pid = e.target.dataset.pid;
-
-                            var detail_div = e.target.parentElement.parentElement.querySelectorAll("div")[0];
-                            var detail_count_info = e.target.parentElement.parentElement.querySelectorAll("div")[1];
-
-                            if(detail_div.dataset.type==="text")
-                            {
-                                detail_div.dataset.type = "html";
-
-                                //detail_div.innerHTML = Ex.Storage.local.plurks[pid]["4"];
-                                P_Ex.api.arg.plurk_id = pid;
-                                P_Ex.api.Send();
-                                console.log(P_Ex.api.data[pid]);
-                                detail_div.innerHTML = P_Ex.api.data[pid].plurk.content;
-                                
-                                
-                                P_Ex.Storage.local.plurks[pid]["2"] = P_Ex.api.data[pid].plurk.favorite_count;
-                                P_Ex.Storage.local.plurks[pid]["3"] = P_Ex.api.data[pid].plurk.replurkers_count;
-
-                                detail_count_info.querySelector(".fav").innerHTML = P_Ex.api.data[pid].plurk.favorite_count;
-
-                                detail_count_info.querySelector(".rep").innerHTML = P_Ex.api.data[pid].plurk.replurkers_count;
-                                
-
-                                P_Ex.f.StorageUpd();
-                            }
-                            else
-                            {
-                                detail_div.dataset.type = "text";
-
-                                detail_div.innerHTML = detail_div.innerText;
-                                
-                            }
-
-                        break;
 
                         case "ApiLoop":
 
