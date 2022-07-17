@@ -22,7 +22,7 @@ class PlurkEx_Rank {
                 "flashmsgsec":10*1000,
                 "plurkinfolist_max":2000,
                 "plurks_page":50,
-                "loop_safe_max":150,
+                "loop_safe_max":300,
                 "loop_sec":1000 * 0.5
                 
             },
@@ -64,9 +64,16 @@ class PlurkEx_Rank {
                                 new Date(api.plurks[api.plurks.length-1].posted).getDate() === new Date(offset).getDate() )
                             )
                         {
-                            if(api.plurks.length>=Ex.config.loop_safe_max) {console.log('max end');Ex.f.PlurkList(api.plurks);return;}
+                            if(api.plurks.length>=Ex.config.loop_safe_max)
+                            {
+                                console.log('max end');
+                                P_Ex.flag.RankProgress = '';
+                                Ex.f.PlurkList(api.plurks);
+                                return;
+                            }
                     
                             console.log(api.plurks.length + '=>setTimeout');
+
                             setTimeout(()=>{
                                 
                                 if(api.plurks.length!==0)
@@ -88,19 +95,21 @@ class PlurkEx_Rank {
 
                 },
                 "PageControl":(page,total)=>{
+                     console.log(page,total);
 
 
-                    if(page>=Math.ceil(total/Ex.config.plurks_page))
+                    document.querySelectorAll(`#page_bar [data-mode="PageChange"]`).forEach(o=>{
+                        o.setAttribute("disabled","");
+                    });
+
+                    if( (page*1+1)<=Math.ceil(total/Ex.config.plurks_page) )
                     {
-                        document.querySelector(`#page_bar [data-path="next"]`).setAttribute("disabled","");
-                        document.querySelector(`#page_bar [data-path="prev"]`).removeAttribute("disabled");
+                        document.querySelector(`#page_bar [data-path="next"]`).removeAttribute("disabled");
                     }
 
-                    if(page*Ex.config.plurks_page<=0)
+                    if( (page-1)*Ex.config.plurks_page>0)
                     {
-                        document.querySelector(`#page_bar [data-path="prev"]`).setAttribute("disabled","");
-
-                        document.querySelector(`#page_bar [data-path="next"]`).removeAttribute("disabled");
+                        document.querySelector(`#page_bar [data-path="prev"]`).removeAttribute("disabled");
                     }
 
                     if(total<=Ex.config.plurks_page)
