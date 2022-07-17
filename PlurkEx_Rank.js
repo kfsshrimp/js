@@ -257,6 +257,7 @@ class PlurkEx_Rank {
 
                             Ex.api.plurks = [];
                             P_Ex.flag.page = 1
+                            P_Ex.flag.RankProgress = '開始搜尋';
 
 
                             var post_data_select = {
