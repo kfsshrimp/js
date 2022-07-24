@@ -699,6 +699,7 @@
 
                 }
 
+
                 var _t = setInterval(()=>{
                     
                     if(typeof(PlurkApi)==="function")
@@ -711,9 +712,6 @@
                             Ex.api.data = Ex.api.data||{};
                             Ex.api.data[ r.plurk.plurk_id ] = r;
                         }
-
-                        if( typeof(f)==="function" ) f();
-
                         clearInterval(_t);
                     }
 
@@ -964,17 +962,14 @@
                 });
 
                 
-                Ex.f.js_set( ()=>{
-                    console.log('js_set_end');
+                Ex.f.js_set();
 
-                    Ex.f.style_set();
-                    Ex.f.obj_set();
-                    Ex.f.plurk_obj_set();
-    
-    
-                    Ex.OtherExSet("PlurkEx_Rank");
+                Ex.f.style_set();
+                Ex.f.obj_set();
+                Ex.f.plurk_obj_set();
 
-                } );
+
+                Ex.OtherExSet("PlurkEx_Rank");
 
                 
                 
