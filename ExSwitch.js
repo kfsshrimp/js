@@ -11,7 +11,7 @@
 
     var domain = location.host.split(".");
 
-    var name = ExAry.filter(ele => domain.includes(ele));
+    var name = ExAry.filter(ele => domain.includes(ele))[0];
 
     if(name==="gamer") name = "youtube";
 
