@@ -717,7 +717,7 @@
                         clearInterval(_t);
                     }
 
-                },500)
+                },100)
 
                 /*
                 setTimeout(()=>{ 
