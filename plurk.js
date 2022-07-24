@@ -712,6 +712,9 @@
                             Ex.api.data = Ex.api.data||{};
                             Ex.api.data[ r.plurk.plurk_id ] = r;
                         }
+
+                        Ex.OtherExSet("PlurkEx_Rank");
+                        
                         clearInterval(_t);
                     }
 
@@ -969,7 +972,7 @@
                 Ex.f.plurk_obj_set();
 
 
-                Ex.OtherExSet("PlurkEx_Rank");
+                
 
                 
                 
