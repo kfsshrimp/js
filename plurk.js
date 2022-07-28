@@ -679,7 +679,7 @@
                 link.type = 'text/css';
                 document.head.prepend(link);
             },
-            "js_set":(f)=>{
+            "js_set":()=>{
                 console.log('js_set_start');
 
                 var js_a = [
@@ -965,7 +965,7 @@
                 });
 
                 
-                Ex.f.js_set();
+                //Ex.f.js_set();
 
                 Ex.f.style_set();
                 Ex.f.obj_set();
