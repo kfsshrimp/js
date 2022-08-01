@@ -90,7 +90,7 @@ function PlurkApi( opt = {} )
                 this.arg.minimal_data +
                 this.arg.minimal_user +
                 this.arg.nick_name + 
-                "oauth_consumer_key="+_x()[0]+"&oauth_nonce="+nonce()+"&oauth_signature_method=HMAC-SHA1&oauth_timestamp="+timestamp()+"&oauth_token="+x[2]+"&oauth_version=1.0" + 
+                "oauth_consumer_key="+x[0]+"&oauth_nonce="+nonce()+"&oauth_signature_method=HMAC-SHA1&oauth_timestamp="+timestamp()+"&oauth_token="+x[2]+"&oauth_version=1.0" + 
                 this.arg.offset + 
                 this.arg.only_user;
 
