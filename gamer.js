@@ -16,7 +16,7 @@
 
         },
         DB:{},
-        js:(url_ary)=>{
+        js:(url_ary,func)=>{
 
 
             for(let i in url_ary)
@@ -28,14 +28,8 @@
                 },i*200);
             }
 
+            if(typeof(func)==="function") func();
 
-            var _t = setInterval(()=>{
-                if(typeof(PlurkApi)==="function")
-                {
-                    Ex.PlurkApi = new PlurkApi();
-                    clearInterval(_t);
-                }
-            },100);
         },
         init:()=>{
 
@@ -43,7 +37,9 @@
 
             Ex.js(
                 ['https://kfsshrimp.github.io/js/GetImg.js']
-            );
+            ,()=>{
+                Ex.GetImg = new GetImg();
+            });
 
 
         }
@@ -51,12 +47,7 @@
 
     
 
-    window.onload = ()=>{
+    Ex.init();
 
-        Ex.init();
-
-
-    }
-    
 
 })();
