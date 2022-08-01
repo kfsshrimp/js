@@ -12,9 +12,12 @@ class GetImg{
         
         this.video = config.video||document.querySelector("video");
         this.GetImgDiv = config.GetImgDiv||document.querySelector("body");
-        this.thumbnail_height = config.thumbnail_height||'80px';
+        this.thumbnail_height = config.thumbnail_height||'120px';
         this.quick_key = config.quick_key||'Q';
-        this.cut_loop_sec = config.cut_loop_sec||200;
+        this.cut_loop_sec = config.cut_loop_sec||100;
+
+        this.canvas_list = [];
+        this.canvas_search = [];
 
 
         this.watermark = {
@@ -61,11 +64,14 @@ class GetImg{
 
 
         ControlBarDiv.innerHTML = `
+            <input id="sec_search" type="number" value="">
             <input data-mode="cut_loop" type="button" value="開始">
             <input data-mode="cut" type="button" value="截圖">
-            <input data-mode="zoom" type="button" value="放大">
+            <input data-mode="search" type="button" value="搜尋">
             <input data-mode="display" type="button" value="隱藏">
             <input data-mode="clear" type="button" value="清除">
+            <input data-mode="prev" type="button" value="<<">
+            <input data-mode="next" type="button" value=">>">
         `;
 
         ControlBarDiv.querySelectorAll("input").forEach(o=>{
@@ -87,15 +93,28 @@ class GetImg{
         switch (e.target.dataset.mode)
         {
             case "cut_loop":
+
                 if(this.timer.Interval.cut_loop!==undefined)
                 {
                     clearInterval(this.timer.Interval.cut_loop);
                     delete this.timer.Interval.cut_loop;
-                    e.target.value = `開始`;  
+                    e.target.value = `開始`;
                 }
                 else
                 {
-                    this.timer.Interval.cut_loop = setInterval(()=>{this.CutVideo()},this.cut_loop_sec);
+
+                    this.timer.Interval.cut_loop = setInterval(()=>{
+
+                        this.CutVideo('loop');
+
+                        if(this.video.paused)
+                        {
+                            clearInterval(this.timer.Interval.cut_loop);
+                            delete this.timer.Interval.cut_loop;
+                            e.target.value = `開始`;
+                        }
+                    },this.cut_loop_sec);
+
                     e.target.value = `停止`;
                 }
                 
@@ -105,8 +124,16 @@ class GetImg{
                 this.CutVideo();
             break;
 
-            case "zoom":
-                this.OpenWindow();
+            case "search":
+                var sec_search = document.querySelector("#sec_search").value;
+
+                this.canvas_search = this.canvas_list.filter(o=>{
+                    return (parseInt(sec_search)===Math.floor(o.dataset.ca_id/100) || sec_search==='' || sec_search===0)
+                });
+
+                
+                this.OutPut(this.canvas_search[ this.canvas_search.length-1 ]);
+                
             break;
 
             case "display":
@@ -134,15 +161,14 @@ class GetImg{
 
     ImgNextPrev = (mode)=>{
 
-        var img = this.n_w.document.querySelector("img"),
-            next;
+        var next;
+        this.canvas_search.forEach( (o,idx)=>{
 
-        this.GetImgDiv.querySelectorAll("canvas").forEach((o,idx)=>{
-            if(o.dataset.ca_id===img.dataset.ca_id)
+            if(this.GetImgDiv.querySelector("canvas").dataset.ca_id===o.dataset.ca_id)
             {
                 next = idx;
             }
-        });
+        } );
 
         switch (mode)
         {
@@ -158,64 +184,30 @@ class GetImg{
             break;
         }
 
-        if(this.GetImgDiv.querySelectorAll("canvas").length===0)
-        {
-            this.n_w.close();
-            return;            
-        }
+        next = (next>=this.canvas_search.length)?0:next;
+        next = (next<0)?this.canvas_search.length-1:next;
 
-        next = (next>=this.GetImgDiv.querySelectorAll("canvas").length)?0:next;
-        next = (next<0)?this.GetImgDiv.querySelectorAll("canvas").length-1:next;
-
-        img.src = this.GetImgDiv.querySelectorAll("canvas")[next].toDataURL();
-        img.dataset.ca_id = this.GetImgDiv.querySelectorAll("canvas")[next].dataset.ca_id;
-
+        this.OutPut(this.canvas_search[next]);
+        
     };
 
-    OpenWindow = ()=>{
+   
 
-        
-
-        this.n_w = window.open(``,``,`width=${this.video.clientWidth+5},height=${this.video.clientHeight+5}`);
-        
-        var img = this.GetImgDiv.querySelectorAll("canvas");
-        if(img.length===0) return;
-
-        img = img[0];
-
-
-        this.n_w.document.body.style = "margin:0px;padding:0px;";
-
-        this.n_w.document.body.innerHTML = `
-        <div style="
-        left:40%;
-        position: absolute;
-        z-index: 9999;
-        opacity: 0.5;
-        ">
-        <input data-mode="prev" type="button" value="PREV">
-        <input data-mode="delete" type="button" value="DELETE">
-        <input data-mode="next" type="button" value="NEXT">
-        </div>
-        <img data-ca_id="${img.dataset.ca_id}" src=${img.toDataURL()}>
-        `;
-
-        this.n_w.document.querySelectorAll("input").forEach(o=>{
-            o.addEventListener("click",this.ControlBtnClick);
-        });
-    }
-    
-
-    CutVideo = ()=>{
+    CutVideo = (loop)=>{
         
         var video = this.video;
         var canvas = document.createElement("canvas");
         var c2d = canvas.getContext("2d");
 
         //canvas.dataset.ca_id = `${this.timestamp()}`;
-        canvas.dataset.ca_id = `${Math.floor(this.video.currentTime*10)}`;
+        canvas.dataset.ca_id = `${Math.floor(this.video.currentTime*100)}`;
 
+        if(
+        this.canvas_list.some(o=>{
+            return canvas.dataset.ca_id===o.dataset.ca_id;
+        }) ) return;
         
+        console.log(  canvas.dataset.ca_id );
 
         canvas.style.height = this.thumbnail_height;
 
@@ -227,7 +219,9 @@ class GetImg{
 
         this.DragendRegister(canvas);
         this.WaterMark(c2d);
-        this.OutPut(canvas);
+        this.SaveMemory(canvas);
+        
+        if(loop!=='loop') this.OutPut(canvas);
     }
 
     WaterMark = (c2d)=>{
@@ -243,9 +237,22 @@ class GetImg{
             `${location.href} ~ ${this.SecToTime(Math.floor(video.currentTime))} ` , this.watermark.x, this.watermark.y);
 
     }
+
+    SaveMemory = (canvas)=>{
+        
+        this.canvas_list.push( canvas );
+    }
     
     OutPut = (canvas)=>{
 
+        if(canvas===undefined) canvas = this.canvas_list[this.canvas_list.length-1];
+
+        this.canvas_search.push(canvas);
+        
+
+        canvas.style.left = '0px';
+        canvas.style.right = '0px';
+        this.GetImgDiv.innerHTML = ``;
         this.GetImgDiv.appendChild(canvas);
     }
 
