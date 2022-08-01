@@ -16,27 +16,6 @@ var Ex;
             "SpeechRecordStatus":true,
             "SpeechRecordSec":0,
             "SpeechRecord":false,
-            "watermark_set":true,
-            "c2d":{
-                "font":"bold 12px sans-serif",
-                "textAlign":"start",
-                "textBaseline":"top",
-                "x":2,
-                "y":2,
-                "fillStyle":"#fff",
-                "strokeStyle":"#000"
-            },
-            "watermark":{
-                "font":"10px sans-serif",
-                "textAlign":"start",
-                "textBaseline":"top",
-                "x":100,
-                "y":100,
-                "fillStyle":"#fff",
-                "strokeStyle":"#000"
-            },
-            "quickkey":81,
-            "quickkey_set":false,
             "yt_chat":{
                 
             },
@@ -249,34 +228,16 @@ var Ex;
 
 
                 var ExMenu = `
+                
+                
+                
+
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
                 <div class="ytp-menuitem-icon" data-event="ClickEvent" data-mode="ExInfo">
                 <img title="外掛資訊" 
                 class="icon-img"  data-event="ClickEvent" data-mode="ExInfo" 
                 src="https://avatars.plurk.com/14556765-small9788529.gif">
                 </div>
-                <div class="ytp-menuitem-label" 
-                data-event="ClickEvent" 
-                data-mode="GetImg">快速截圖 (<span title="快截鍵更改" data-event="ClickEvent" data-mode="quickkey" class="quickkey">Q</span>)
-                </div>
-                <div title="截圖左上時間浮水印" class="ytp-menuitem-content" 
-                data-event="ClickEvent" data-mode="watermark_set">
-                <div class="ytp-menuitem-toggle-checkbox" data-event="ClickEvent" data-mode="watermark_set"></div>
-                </div>
-                </div>
-
-                <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
-                <div class="ytp-menuitem-icon" 
-                data-event="ClickEvent" data-mode="ClearImg"></div>
-                <div class="ytp-menuitem-label" 
-                data-event="ClickEvent" data-mode="ClearImg">清除截圖</div>
-                <div class="ytp-menuitem-content" 
-                data-event="ClickEvent" data-mode="ClearImg"></div>
-                </div>
-
-                <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
-                <div class="ytp-menuitem-icon" 
-                data-event="ClickEvent" data-mode="Video90"></div>
                 <div class="ytp-menuitem-label" 
                 data-event="ClickEvent" data-mode="Video90">影像90度</div>
                 <div class="ytp-menuitem-content" 
@@ -354,29 +315,8 @@ var Ex;
 
                     }
 
-                    if(e.target.nodeName==="CANVAS")
-                    {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        
-                        var n_w = window.open("",``,`width=${video.clientWidth+5},height=${video.clientHeight+5}`);
-                        n_w.document.body.style = "margin:0px";
-                        n_w.document.body.innerHTML = `<img src="${e.target.toDataURL()}">`;
-                    }
+                    
                 });
-
-                document.addEventListener("keydown",(e)=>{
-
-                    if(Ex.flag.quickkey_set===true)
-                    {
-                        Ex.flag.quickkey = e.keyCode;
-                        document.querySelectorAll(".quickkey").forEach(o=>{
-                            o.innerHTML = e.key.toUpperCase();
-                        });
-                    }
-                    else
-                        if(e.keyCode===Ex.flag.quickkey) Ex.f.getImage();
-                })
 
 
             },
@@ -393,39 +333,8 @@ var Ex;
 
                     break;
 
-                    case "GetImg":
-                        Ex.f.getImage();
-                    
-                        document.querySelector(".ytp-popup.ytp-contextmenu").style.display = "none";
-                    break;
-
-                    case "ClearImg":
-                        Ex.obj.screenshot.innerHTML = '';
-                    
-                        document.querySelector(".ytp-popup.ytp-contextmenu").style.display = "none";
-                    break;
-
-                    case "quickkey":
-                        Ex.flag.quickkey_set = true;
-                        Ex.f.MsgPop(`<div class="quickkey_set_div">按下鍵盤按鍵更改快截鍵<BR>目前快截： (<span class="quickkey">Q</span>)<div>`,e);
-                        Ex.obj.msg.querySelector("input").addEventListener("click",()=>{Ex.flag.quickkey_set = false;});
-                    break;
-
                     case "ExInfo":
                         window.open("https://www.plurk.com/p/oplic7","plurk");
-                    break;
-
-                    case "watermark_set":
-                        if(e.target.className==="ytp-menuitem-content")
-                        {
-                            Ex.flag.watermark_set = true;
-                            e.target.innerHTML = `<div class="ytp-menuitem-toggle-checkbox" data-event="ClickEvent" data-mode="watermark_set"></div>`;
-                        }
-                        else
-                        {
-                            Ex.flag.watermark_set = false;
-                            e.target.remove();
-                        }
                     break;
 
                     case "Video90":
@@ -563,53 +472,6 @@ var Ex;
                     document.querySelector(".ytp-chrome-bottom").style = `width:`+document.querySelector(".ytp-chrome-bottom").style.width+`;left:300px;top:10px;opacity: 1;z-index: 9999;background: #000;`;
                     document.querySelector("#player").parentElement.prepend( document.querySelector(".ytp-chrome-bottom") );
                 }
-            },
-            "getImage":()=>{
-
-                Ex.obj.video = document.querySelector("video");
-
-                var canvas = document.createElement("canvas");
-                var c2d = canvas.getContext("2d");
-                var video = Ex.obj.video;
-                canvas.id = Math.floor(video.currentTime);
-                canvas.setAttribute("draggable","true");
-                canvas.dataset.draggable_remove = "true";
-                canvas.width = video.clientWidth;
-                canvas.height = video.clientHeight;
-                c2d.drawImage(video,0,0,video.clientWidth,video.clientHeight);
-
-
-                if(Ex.flag.watermark_set===true)
-                {
-                    c2d.font = Ex.flag.c2d.font;
-                    c2d.textAlign = Ex.flag.c2d.textAlign;
-                    c2d.textBaseline = Ex.flag.c2d.textBaseline;
-                    c2d.fillStyle = Ex.flag.c2d.fillStyle;
-                    c2d.strokeStyle = Ex.flag.c2d.strokeStyle;
-                    c2d.strokeText( Ex.f.YtCurrentTime( Math.floor(video.currentTime) ), Ex.flag.c2d.x, Ex.flag.c2d.y);
-                    c2d.fillText( Ex.f.YtCurrentTime( Math.floor(video.currentTime) ), Ex.flag.c2d.x, Ex.flag.c2d.y);
-                }
-
-                /*
-                c2d.font = Ex.flag.watermark.font;
-                Ex.flag.watermark.x = Ex.obj.video.clientWidth - 90;
-                Ex.flag.watermark.y = Ex.obj.video.clientHeight - 12;
-                c2d.textAlign = Ex.flag.watermark.textAlign;
-                c2d.textBaseline = Ex.flag.watermark.textBaseline;
-                c2d.fillStyle = Ex.flag.watermark.fillStyle;
-                c2d.fillText("plurk@kfsshrimp4", Ex.flag.watermark.x, Ex.flag.watermark.y);*/
-
-
-                Ex.obj.screenshot.querySelectorAll("canvas").forEach(o=>{
-                    if(o.style.left===canvas.style.left && o.style.top===canvas.style.top)
-                    {
-                        canvas.style.left = o.style.left.split("px")[0]*1+20 + 'px';
-                        canvas.style.top = o.style.top.split("px")[0]*1+20 + 'px';
-                    }
-                });
-                
-                Ex.obj.screenshot.appendChild(canvas);
-
             },
             "SpeechRecord":(lang)=>{
 
