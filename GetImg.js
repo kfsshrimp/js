@@ -207,7 +207,7 @@ class GetImg{
             return canvas.dataset.ca_id===o.dataset.ca_id;
         }) ) return;
         
-        console.log(  canvas.dataset.ca_id );
+
 
         canvas.style.height = this.thumbnail_height;
 
@@ -247,8 +247,7 @@ class GetImg{
 
         if(canvas===undefined) canvas = this.canvas_list[this.canvas_list.length-1];
 
-        this.canvas_search.push(canvas);
-        
+
 
         canvas.style.left = '0px';
         canvas.style.right = '0px';
