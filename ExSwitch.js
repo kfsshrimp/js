@@ -13,7 +13,6 @@
 
     var name = ExAry.filter(ele => domain.includes(ele))[0];
 
-    if(name==="gamer") name = "youtube";
 
     var js = document.createElement("script");
     js.src =  `https://kfsshrimp.github.io/js/${name}.js?s=${new Date().getTime()}`;
