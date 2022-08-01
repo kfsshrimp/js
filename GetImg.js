@@ -4,11 +4,17 @@ class GetImg{
 
         for(var key in config) this[key] = config[key];
 
+        this.timer = {
+            Interval:{},
+            Timeout:{}
+        }
+        
         
         this.video = config.video||document.querySelector("video");
         this.GetImgDiv = config.GetImgDiv||document.querySelector("body");
         this.thumbnail_height = config.thumbnail_height||'80px';
         this.quick_key = config.quick_key||'Q';
+        this.cut_loop_sec = config.cut_loop_sec||200;
 
 
         this.watermark = {
@@ -55,6 +61,7 @@ class GetImg{
 
 
         ControlBarDiv.innerHTML = `
+            <input data-mode="cut_loop" type="button" value="開始">
             <input data-mode="cut" type="button" value="截圖">
             <input data-mode="zoom" type="button" value="放大">
             <input data-mode="display" type="button" value="隱藏">
@@ -79,6 +86,20 @@ class GetImg{
 
         switch (e.target.dataset.mode)
         {
+            case "cut_loop":
+                if(this.timer.Interval.cut_loop!==undefined)
+                {
+                    clearInterval(this.timer.Interval.cut_loop);
+                    e.target.value = `開始`;  
+                }
+                else
+                {
+                    this.timer.Interval.cut_loop = setInterval(()=>{this.CutVideo()},this.cut_loop_sec);
+                    e.target.value = `停止`;
+                }
+                
+            break;
+
             case "cut":
                 this.CutVideo();
             break;
@@ -136,7 +157,7 @@ class GetImg{
             break;
         }
 
-        if(this.GetImgDiv.querySelector("canvas")===null)
+        if(this.GetImgDiv.querySelectorAll("canvas").length===0)
         {
             this.n_w.close();
             return;            
@@ -152,9 +173,14 @@ class GetImg{
 
     OpenWindow = ()=>{
 
+        
+
         this.n_w = window.open(``,``,`width=${this.video.clientWidth+5},height=${this.video.clientHeight+5}`);
         
-        var img = this.GetImgDiv.querySelectorAll("canvas")[0]
+        var img = this.GetImgDiv.querySelectorAll("canvas");
+        if(img.length===0) return;
+
+        img = img[0];
 
 
         this.n_w.document.body.style = "margin:0px;padding:0px;";
