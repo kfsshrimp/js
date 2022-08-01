@@ -90,6 +90,7 @@ class GetImg{
                 if(this.timer.Interval.cut_loop!==undefined)
                 {
                     clearInterval(this.timer.Interval.cut_loop);
+                    delete this.timer.Interval.cut_loop;
                     e.target.value = `開始`;  
                 }
                 else
