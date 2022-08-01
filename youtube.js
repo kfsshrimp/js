@@ -590,6 +590,21 @@ var Ex;
                 link.type = 'text/css';
                 document.head.prepend(link);
             },
+            "js_set":(url_ary,func)=>{
+
+
+                for(let i in url_ary)
+                {
+                    setTimeout(()=>{
+                        var js = document.createElement("script");
+                        js.src = `${url_ary[i]}?s=${new Date().getTime()}`;
+                        document.head.prepend(js);
+                    },i*200);
+                }
+    
+                if(typeof(func)==="function") func();
+    
+            },
             "obj_set":function(){
 
                 Ex.obj.Ex_div = document.createElement("div");
@@ -714,6 +729,20 @@ var Ex;
                 Ex.f.style_set();
                 Ex.f.obj_set();
                 Ex.f.custome_obj_set();
+
+                Ex.f.js_set(
+                    ['https://kfsshrimp.github.io/js/GetImg.js']
+                ,()=>{
+                    var _t = setInterval(()=>{
+                        if(typeof(GetImg)==="function")
+                        {
+                            Ex.GetImg = new GetImg();
+                            clearInterval(_t);
+                        }
+                    },1);
+                    
+                });
+    
                 
             }
         }

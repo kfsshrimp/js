@@ -38,7 +38,13 @@
             Ex.js(
                 ['https://kfsshrimp.github.io/js/GetImg.js']
             ,()=>{
-                Ex.GetImg = new GetImg();
+                var _t = setInterval(()=>{
+                    if(typeof(GetImg)==="function")
+                    {
+                        Ex.GetImg = new GetImg();
+                        clearInterval(_t);
+                    }
+                },1);
             });
 
 
