@@ -212,7 +212,8 @@ class GetImg{
         var canvas = document.createElement("canvas");
         var c2d = canvas.getContext("2d");
 
-        canvas.dataset.ca_id = `${this.timestamp()}`;
+        //canvas.dataset.ca_id = `${this.timestamp()}`;
+        canvas.dataset.ca_id = `${Math.floor(this.video.currentTime*10)}`;
 
         
 
