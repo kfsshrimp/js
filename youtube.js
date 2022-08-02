@@ -109,7 +109,16 @@ var Ex;
 
                     Ex.Clock.setInterval.ChatEx = setInterval(()=>{
 
-                        if(Ex.flag.yt_chat_on) Ex.f.ChatRef();
+                        console.log('Ex.Clock.setInterval.ChatEx')
+                        if(Ex.flag.yt_chat_on)
+                        {
+                            Ex.f.ChatRef();
+                        }
+                        else
+                        {
+                            clearInterval(Ex.Clock.setInterval.ChatEx);
+                            delete Ex.Clock.setInterval.ChatEx;
+                        }
 
                     },1000);
                 });
@@ -228,9 +237,7 @@ var Ex;
 
 
                 var ExMenu = `
-                
-                
-                
+
 
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
                 <div class="ytp-menuitem-icon" data-event="ClickEvent" data-mode="ExInfo">
@@ -271,15 +278,16 @@ var Ex;
                 data-event="ClickEvent" data-mode="ChatRecord"></div>
                 </div>
 
+                <!--
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
                 <div class="ytp-menuitem-icon" 
                 data-event="ClickEvent" data-mode="SpeechRecord"></div>
                 <div class="ytp-menuitem-label" 
                 data-event="ClickEvent" data-mode="SpeechRecord">即時字幕</div>
                 <div class="ytp-menuitem-content" 
-                data-event="ClickEvent" data-mode="SpeechRecord">
+                data-event="ClickEvent" data-mode="SpeechRecord"></div>
                 </div>
-                </div>
+                -->
                 `
 
                 /*
@@ -352,7 +360,7 @@ var Ex;
                             });
                         });
 
-                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
+                        document.querySelector(".ytp-popup.ytp-contextmenu").style.display = 'none';
 
 
                     break;
@@ -380,7 +388,6 @@ var Ex;
                         }
                         Ex.f.VideoRotate();
 
-                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
 
                     break;
 
@@ -396,7 +403,7 @@ var Ex;
                             document.exitPictureInPicture();
                         }
 
-                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
+                        
                     break;
 
 
@@ -432,7 +439,6 @@ var Ex;
                             Ex.obj.chat.style.display = "none";
                         }
 
-                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
 
                     break;
 
@@ -493,7 +499,7 @@ var Ex;
                         }
 
 
-                        
+
 
                         Ex.obj.msg.style.display = "none";
 
@@ -682,9 +688,11 @@ var Ex;
 
                 Ex.obj.YtTime = document.createElement("div");
                 Ex.obj.YtTime.id = `${Ex.id}-YtTime`;
-                Ex.obj.YtTime.innerHTML = `
-                <div data-flag="YtTime">${Ex.f.YtCurrentTime(document.querySelector("video").currentTime)}</div>
-                `;
+                Ex.obj.YtTime.innerHTML = `${Ex.f.YtCurrentTime(document.querySelector("video").currentTime)}`;
+
+                Ex.Clock.setInterval.YtTime = setInterval(()=>{
+                    Ex.obj.YtTime.innerHTML = `${Ex.f.YtCurrentTime(document.querySelector("video").currentTime)}`;
+                },500);
 
                 
                 
@@ -727,15 +735,20 @@ var Ex;
             },
             "default":()=>{
 
+                /*
                 Ex.Clock.setInterval.flag = setInterval(()=>{
 
                     Ex.flag.YtTime = Ex.f.YtCurrentTime(document.querySelector("video").currentTime);
 
                     Ex.f.FlagUpd();
 
+
                     if(typeof(webkitSpeechRecognition)==="undefined") return;
                     Ex.f.SpeechRecordSecCounter();
+            
+
                 },1000);
+                */
 
 
                 document.addEventListener("dragend",function(e){
@@ -792,7 +805,7 @@ var Ex;
                     var _t = setInterval(()=>{
                         if(typeof(GetImg)==="function")
                         {
-                            Ex.GetImg = new GetImg();
+                            Ex.GetImg = new GetImg({loop_sec:50});
                             clearInterval(_t);
                         }
                     },1);
