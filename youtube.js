@@ -664,12 +664,23 @@ var Ex;
                 <div></div>
                 <div>LOADING...</div>
                 `;
+
+
+                Ex.obj.YtTime = document.createElement("div");
+                Ex.obj.YtTime.id = `${Ex.id}-YtTime`;
+                Ex.obj.YtTime.innerHTML = `
+                <div data-flag="YtTime">${Ex.f.YtCurrentTime(document.querySelector("video").currentTime)}</div>
+                `;
+
+                
                 
                 //document.body.prepend( Ex.obj.load );
 
                 document.body.appendChild( Ex.obj.Ex_div );
                 document.body.appendChild( Ex.obj.msg );
                 document.body.appendChild( Ex.obj.menu );
+                document.body.appendChild( Ex.obj.YtTime );
+
             },
             "FlagUpd":()=>{
                 document.querySelectorAll(`[data-flag]`).forEach(o=>{
@@ -703,6 +714,9 @@ var Ex;
             "default":()=>{
 
                 Ex.Clock.setInterval.flag = setInterval(()=>{
+
+                    Ex.flag.YtTime = Ex.f.YtCurrentTime(document.querySelector("video").currentTime);
+
                     Ex.f.FlagUpd();
 
                     if(typeof(webkitSpeechRecognition)==="undefined") return;
