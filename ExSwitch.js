@@ -1,3 +1,38 @@
+class JsCssSet {
+
+    constructor( config = {}){
+        this.url = config.url;
+        this.type = config.type||'js';
+    }
+
+    Set = ()=>{
+
+        var obj;
+        switch (this.type)
+        {
+            case "js":
+                obj = document.createElement("script");
+                obj.src = `${this.url}?s=${new Date().getTime()}`;
+
+            break;
+
+            case "css":
+                obj = document.createElement("link");
+                obj.href = `${this.url}?s=${new Date().getTime()}`;
+                obj.rel = 'stylesheet';
+                obj.type = 'text/css';
+                
+            break;
+        }
+       
+        document.head.prepend(obj);
+    }
+
+
+
+}
+
+
 (()=>{
     var url = new URL(location.href);
 
@@ -10,19 +45,12 @@
         "chobit",
         "animeVideo"
     ];
-    var src,ExName;
+    var src;
     
 
-    if(url.searchParams.get("js")===null)
-    {
-        src = `https://kfsshrimp.github.io/js/${ExList.find(o => url.host.split(".").includes(o))}.js`;
-    }
-    else
-    {
-        src = url.searchParams.get("js");
-    }
+    src = `https://kfsshrimp.github.io/js/${ExList.find(o => url.host.split(".").includes(o))}.js`;
 
-    console.log(src);
+
     var script = document.createElement("script");
     script.src =  `${src}?s=${new Date().getTime()}`;
     document.head.prepend(script);
