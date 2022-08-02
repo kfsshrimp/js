@@ -1,13 +1,26 @@
 class JsCssSet {
 
-    constructor( config = {}){
-        this.url = new URL(config.url);
+    constructor( url ,config = {} ){
+
+        if( Array.isArray(url) )
+        {
+            for(var u of url)
+            {
+
+                this.Set( new URL(u) );
+            }
+        }
+        else
+        {
+            this.Set( new URL(url) );
+        }
     }
 
-    Set = ()=>{
+    Set = (url)=>{
 
         var obj;
-        var type = this.url.pathname.split("/").pop().split(".").pop();
+        var type = url.pathname.split("/").pop().split(".").pop();
+
         switch (type)
         {
             case "js":
