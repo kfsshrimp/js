@@ -1,14 +1,14 @@
 class JsCssSet {
 
     constructor( config = {}){
-        this.url = config.url;
-        this.type = config.type||'js';
+        this.url = new URL(config.url);
     }
 
     Set = ()=>{
 
         var obj;
-        switch (this.type)
+        var type = this.url.pathname.split("/").pop().split(".").pop();
+        switch (type)
         {
             case "js":
                 obj = document.createElement("script");
