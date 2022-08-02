@@ -43,7 +43,7 @@ class JsCssSet {
             break;
         }
 
-        console.log(obj);
+        console.log(`load：${url}`);
        
         document.head.prepend(obj);
     }

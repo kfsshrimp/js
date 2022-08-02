@@ -18,7 +18,7 @@ class GetImg{
         this.canvas_list = [];
         //this.canvas_search = [];
 
-        this.JsCssSet = new JsCssSet();
+        this.JsCssSet = (typeof(JsCssSet)==="function")?new JsCssSet():{};
 
 
         this.watermark = {
@@ -37,22 +37,28 @@ class GetImg{
 
         document.addEventListener("keydown",(e)=>{
 
-            if(e.key.toString().toUpperCase()===this.quick_key.toString().toUpperCase())
-            this.CutVideo();
+            switch (e.key)
+            {
+                case "ArrowRight":
+                case "ArrowLeft":
+                    document.querySelector(`[data-keydown="${e.key}"]`).click();
+                break;
+
+                default :
+
+                    if(e.key.toString().toUpperCase()===this.quick_key.toString().toUpperCase())
+                    {
+                        this.CutVideo();
+                    }
+                    
+                break;
+            }
 
         });
 
         this.ControlBar();
         this.Style();
 
-
-        if( typeof(GIF)==='undefined' )
-        {
-            this.JsCssSet.url = ['https://kfsshrimp.github.io/gifjs/gif.js']
-
-            this.JsCssSet.init();
-        }
-        
 
     }
     
@@ -98,8 +104,8 @@ class GetImg{
             <input data-mode="cut" type="button" value="截圖">
             <input data-mode="display" type="button" value="隱藏">
             <input data-mode="clear" type="button" value="清除">
-            <input data-mode="prev" type="button" value="<<">
-            <input data-mode="next" type="button" value=">>">
+            <input data-keydown="ArrowLeft" data-mode="prev" type="button" value="<<">
+            <input data-keydown="ArrowRight" data-mode="next" type="button" value=">>">
         `;
 
 
