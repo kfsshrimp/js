@@ -246,6 +246,15 @@ var Ex;
 
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
                 <div class="ytp-menuitem-icon" 
+                data-event="ClickEvent" data-mode="VtimeJump"></div>
+                <div class="ytp-menuitem-label" 
+                data-event="ClickEvent" data-mode="VtimeJump">時間切換</div>
+                <div class="ytp-menuitem-content" 
+                data-event="ClickEvent" data-mode="VtimeJump"></div>
+                </div>
+
+                <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
+                <div class="ytp-menuitem-icon" 
                 data-event="ClickEvent" data-mode="PopVideo"></div>
                 <div class="ytp-menuitem-label" 
                 data-event="ClickEvent" data-mode="PopVideo">子母視窗</div>
@@ -325,6 +334,25 @@ var Ex;
 
                 switch (e.target.dataset.mode)
                 {
+                    case "VtimeJump":
+                        document.querySelectorAll('#content-text .yt-simple-endpoint').forEach(o=>{
+                            var span = document.createElement("span");
+                            span.className = o.className;
+                            span.innerHTML = `${o.innerHTML}`;
+                            if(o.href===undefined) return;
+                            span.dataset.sec = parseInt( new URL(o.href).searchParams.get("t") ) ;
+                            o.parentElement.appendChild(span);
+                        
+                            o.parentElement.insertBefore(span,o);
+                        
+                            o.remove();
+                            span.addEventListener("click",(e)=>{
+                                console.log(e.target.dataset.sec);
+                                document.querySelector("video").currentTime = e.target.dataset.sec;
+                            });
+                        });
+                    break;
+
                     case "SearchTime":
                         
                         Ex.obj.video.currentTime = Ex.f.YtCurrentTime( 
@@ -755,4 +783,24 @@ var Ex;
 
 //var js = document.createElement("script");js.src =  `https://kfsshrimp.github.io/plurk/youtube.js?s=${new Date().getTime()}`;document.head.prepend(js);
 //'dmFyIGpzID0gZG9jdW1lbnQuY3JlYXRlRWxlbWVudCgic2NyaXB0Iik7anMuc3JjID0gIGBodHRwczovL2tmc3NocmltcC5naXRodWIuaW8vcGx1cmsveW91dHViZS5qcz9zPSR7bmV3IERhdGUoKS5nZXRUaW1lKCl9YDtkb2N1bWVudC5oZWFkLnByZXBlbmQoanMpOw=='
+
+
+/*
+document.querySelectorAll('#content-text .yt-simple-endpoint').forEach(o=>{
+    var span = document.createElement("span");
+    span.className = o.className;
+    span.innerHTML = `${o.innerHTML}`;
+    if(o.href===undefined) return;
+    span.dataset.sec = parseInt( new URL(o.href).searchParams.get("t") ) ;
+    o.parentElement.appendChild(span);
+
+    o.parentElement.insertBefore(span,o);
+
+    o.remove();
+    span.addEventListener("click",(e)=>{
+        console.log(e.target.dataset.sec);
+        document.querySelector("video").currentTime = e.target.dataset.sec;
+    });
+});
+*/
 
