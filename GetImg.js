@@ -9,7 +9,6 @@ class GetImg{
             Timeout:{}
         }
         
-        
         this.video = config.video||document.querySelector("video");
         this.GetImgDiv = config.GetImgDiv||document.querySelector("body");
         this.thumb_size = config.thumb_size||'120px';
@@ -18,6 +17,8 @@ class GetImg{
 
         this.canvas_list = [];
         //this.canvas_search = [];
+
+        this.JsCssSet = new JsCssSet();
 
 
         this.watermark = {
@@ -43,6 +44,17 @@ class GetImg{
 
         this.ControlBar();
         this.Style();
+
+
+        if( typeof(GIF)==='undefined' )
+        {
+            this.JsCssSet.url = [
+                'https://kfsshrimp.github.io/gifjs/gif.js',
+                'https://kfsshrimp.github.io/gifjs/gif.worker.js']
+
+            this.JsCssSet.init();
+        }
+        
 
     }
     

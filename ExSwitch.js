@@ -2,9 +2,15 @@ class JsCssSet {
 
     constructor( url ,config = {} ){
 
-        if( Array.isArray(url) )
+        this.url = url;
+
+    }
+
+    init = ()=>{
+
+        if( Array.isArray(this.url) )
         {
-            for(var u of url)
+            for(var u of this.url)
             {
 
                 this.Set( new URL(u) );
@@ -12,7 +18,7 @@ class JsCssSet {
         }
         else
         {
-            this.Set( new URL(url) );
+            this.Set( new URL(this.url) );
         }
     }
 
@@ -25,24 +31,22 @@ class JsCssSet {
         {
             case "js":
                 obj = document.createElement("script");
-                obj.src = `${this.url}?s=${new Date().getTime()}`;
+                obj.src = `${url}?s=${new Date().getTime()}`;
 
             break;
 
             case "css":
                 obj = document.createElement("link");
-                obj.href = `${this.url}?s=${new Date().getTime()}`;
+                obj.href = `${url}?s=${new Date().getTime()}`;
                 obj.rel = 'stylesheet';
                 obj.type = 'text/css';
-                
             break;
         }
+
+        console.log(obj);
        
         document.head.prepend(obj);
     }
-
-
-
 }
 
 
