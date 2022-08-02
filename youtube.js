@@ -246,11 +246,11 @@ var Ex;
 
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
                 <div class="ytp-menuitem-icon" 
-                data-event="ClickEvent" data-mode="VtimeJump"></div>
+                data-event="ClickEvent" data-mode="VideoTimeJump"></div>
                 <div class="ytp-menuitem-label" 
-                data-event="ClickEvent" data-mode="VtimeJump">時間切換</div>
+                data-event="ClickEvent" data-mode="VideoTimeJump">時間切換</div>
                 <div class="ytp-menuitem-content" 
-                data-event="ClickEvent" data-mode="VtimeJump"></div>
+                data-event="ClickEvent" data-mode="VideoTimeJump"></div>
                 </div>
 
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
@@ -334,7 +334,7 @@ var Ex;
 
                 switch (e.target.dataset.mode)
                 {
-                    case "VtimeJump":
+                    case "VideoTimeJump":
                         document.querySelectorAll('#content-text .yt-simple-endpoint').forEach(o=>{
                             var span = document.createElement("span");
                             span.className = o.className;
@@ -351,6 +351,10 @@ var Ex;
                                 document.querySelector("video").currentTime = e.target.dataset.sec;
                             });
                         });
+
+                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
+
+
                     break;
 
                     case "SearchTime":
@@ -375,6 +379,9 @@ var Ex;
                             e.target.parentElement.querySelector(".ytp-menuitem-content").innerHTML = ``;
                         }
                         Ex.f.VideoRotate();
+
+                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
+
                     break;
 
                     case "PopVideo":
@@ -388,6 +395,8 @@ var Ex;
                             e.target.parentElement.querySelector(".ytp-menuitem-content").innerHTML = ``;
                             document.exitPictureInPicture();
                         }
+
+                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
                     break;
 
 
@@ -423,6 +432,8 @@ var Ex;
                             Ex.obj.chat.style.display = "none";
                         }
 
+                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
+
                     break;
 
 
@@ -443,6 +454,8 @@ var Ex;
                             Ex.flag.SpeechRecord.stop();
                             Ex.obj.SpeechRecord.style.display = "none";
                         }
+
+                        document.querySelector(".ytp-popup.ytp-contextmenu .ytp-panel-menu").style.display = 'none';
 
                     break;
 
@@ -480,6 +493,7 @@ var Ex;
                         }
 
 
+                        
 
                         Ex.obj.msg.style.display = "none";
 
