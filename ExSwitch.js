@@ -1,24 +1,30 @@
 (()=>{
-    var ExAry = [
+    var url = new URL(location.href);
+
+    var ExList = [
         "nhentai",
         "plurk",
         "youtube",
         "manhuagui",
         "wnacg",
         "chobit",
-        "gamer"
+        "animeVideo"
     ];
+    var src;
 
-    var domain = location.host.split(".");
+    if(url.searchParams.get("js")!==null)
+    {
+        src = `https://kfsshrimp.github.io/js/${ExList.find(o => url.host.split(".").includes(o))}.js`;
+    }
+    else
+    {
+        src = url.searchParams.get("js");
+    }
 
-    var name = ExAry.filter(ele => domain.includes(ele))[0];
+    var script = document.createElement("script");
+    script.src =  `${src}?s=${new Date().getTime()}`;
+    document.head.prepend(script);
 
-
-    var js = document.createElement("script");
-    js.src =  `https://kfsshrimp.github.io/js/${name}.js?s=${new Date().getTime()}`;
-    document.head.prepend(js);
-
-
-    console.log(`load：${js.src}`);
+    console.log(`load：${script.src}`);
 
 })();
