@@ -48,9 +48,7 @@ class GetImg{
 
         if( typeof(GIF)==='undefined' )
         {
-            this.JsCssSet.url = [
-                'https://kfsshrimp.github.io/gifjs/gif.js',
-                'https://kfsshrimp.github.io/gifjs/gif.worker.js']
+            this.JsCssSet.url = ['https://kfsshrimp.github.io/gifjs/gif.js']
 
             this.JsCssSet.init();
         }
@@ -221,6 +219,7 @@ class GetImg{
 
             case "clear":
                 this.GetImgDiv.innerHTML = ``;
+                this.canvas_list = [];
             break;
 
             case "next":
