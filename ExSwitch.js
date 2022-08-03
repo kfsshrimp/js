@@ -51,7 +51,6 @@ class JsCssSet {
 
 
 (()=>{
-    var url = new URL(location.href);
 
     var ExList = [
         "nhentai",
@@ -61,16 +60,10 @@ class JsCssSet {
         "wnacg",
         "chobit",
         "animeVideo",
-        "ani"
     ];
-    var src;
-    
-
-    src = `https://kfsshrimp.github.io/js/${ExList.find(o => url.host.split(".").includes(o))}.js`;
-
 
     var script = document.createElement("script");
-    script.src =  `${src}?s=${new Date().getTime()}`;
+    script.src =  `https://kfsshrimp.github.io/js/${ExList.find(o => location.href.indexOf(o)!==-1)}.js?s=${new Date().getTime()}`;
     document.head.prepend(script);
 
     console.log(`load：${script.src}`);

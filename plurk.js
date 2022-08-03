@@ -74,14 +74,9 @@
                             });
                         }
                         
-                        if(document.querySelector(`div[data-pid="${pid}"]`).innerHTML.indexOf("【投票】")!==-1)
-                        {
-                            Ex.f.RePlurkToPieChart( pid );
-                        }
-                        
                     }
 
-                },500);
+                },1);
 
                 /*"ResponsesManager":ResponsesManager
                 ResponsesManager.loadResponses( parseInt('ophxn9',36) )
@@ -192,83 +187,6 @@
 
                 },1000);
 
-
-                return;
-                
-                Ex.obj.vote_btn = document.createElement("div");
-                Ex.obj.vote_btn.className = "submit_img submit_img_color";
-                Ex.obj.vote_btn.style.fontSize = "20px";
-                Ex.obj.vote_btn.innerHTML = "建立投票";
-
-                Ex.obj.vote_btn.dataset.event = "ClickEvent";
-                Ex.obj.vote_btn.dataset.mode = "CreateVote";
-
-                if( document.querySelector("#input_big")!==null)
-                {
-                    document.querySelector(".plurkForm:not(.mini-mode) .submit_img").parentElement.insertBefore( Ex.obj.vote_btn ,document.querySelector(".plurkForm:not(.mini-mode) .submit_img"));
-                }
-
-                Ex.Clock.setInterval.GetVotePlurk = setInterval(()=>{
-
-                    /*
-                    :not(${Object.keys(Ex.flag.plurk).map(a=>{return `[data-pid="${a}"]`;}).join(",")||'a'})`
-                    */
-
-                    document.querySelectorAll(`.block_cnt:nth-child(1)>div[data-uid="${GLOBAL.session_user.uid}"],.block_cnt:nth-child(1)>div[data-uid="99999"]`).forEach(o=>{
-
-                        if(o.innerHTML.indexOf("【投票】")===-1) return;
-    
-                        if(Ex.flag.plurk[ o.dataset.pid ]===undefined) 
-                            Ex.f.GetPlurk( o.dataset.pid );
-
-                       
-                        if( Ex.flag.plurk[ o.dataset.pid ]._replurk!==undefined )
-                            Ex.f.RePlurkToPieChart( o.dataset.pid );
-
-                    });
-
-                    
-                    document.querySelectorAll(`#cbox_response,#form_holder,#plurk_responses`).forEach(o=>{
-
-                        if(o.querySelector(`#response-search`)!==null)
-                        {
-                            if(o.id==="plurk_responses")
-                            {
-                                var mtop = window.scrollY - document.querySelector(".bigplurk").clientHeight;
-                                mtop = (mtop<0)?0:mtop;
-
-                                o.querySelector(`#response-search`).style.marginTop = mtop + 'px';
-                                o.querySelector(`#response-search`).style.right = '0px'
-                            }
-                            else
-                            {
-                                o.querySelector(`#response-search`).style.marginTop = o.querySelector(".response_box").scrollTop + 'px';
-                            }
-                        }
-                        else
-                        {
-
-
-                            var search_div = document.createElement("div");
-                            search_div.id = "response-search";
-                            search_div.innerHTML = `
-                            
-                                <input type="text" id="content" placeholder="內容">
-                                <input type="text" id="name" placeholder="暱稱(帳號)">
-                            `;
-
-                            o.querySelector(".response_info").prepend(search_div);
-                            
-                            search_div.querySelectorAll("input").forEach(input=>{
-
-                                input.addEventListener("keydown",Ex.f.ReplurkSearch);
-
-                            });
-                        }
-                    });
-
-                },1000);
-                
             },
             "ReplurkSearch":(e)=>{
                                 
@@ -290,8 +208,11 @@
                     
 
 
-                    setTimeout(()=>{
+                    var _t = setInterval(()=>{
 
+                        if(Ex.flag.plurk[pid]._replurk.length===0) return;
+
+                        clearInterval(_t);
                         
                         Ex.flag.plurk[pid]._replurk.forEach(r=>{
 
@@ -316,102 +237,8 @@
                         });
                         response_box.scrollTo(0,0);
 
-                    },500);
+                    },1);
                 }
-            },
-            "PieChart":(plurk_div)=>{
-
-
-                if(plurk_div.querySelector("canvas")===null)
-                {
-                    plurk_div.innerHTML = `
-                        <canvas style="opacity:0;" 
-                        data-m_event="MouseEvent" 
-                        data-mode="VoteInfo" 
-                        height="${Ex.config.canvas.height}" width="${Ex.config.canvas.width}">
-                        </canvas>
-                        <div id="VoteInfo"></div>
-                        ${plurk_div.innerHTML}
-                    `;
-
-                    plurk_div.querySelector("canvas").addEventListener("mouseleave",(e)=>{
-                        e.target.parentElement.querySelector("div#VoteInfo").style.opacity = "0";
-                    });
-
-                }
-
-                var canvas = plurk_div.querySelector("canvas")
-                var c2d = canvas.getContext("2d");
-                var x = Math.floor(canvas.width/2);
-                var y = Math.floor(canvas.height/2);
-                var r = x;
-                var p = 2*Math.PI;
-                var deg_start = 0;
-                var deg_end; 
-                var vote = Ex.flag.plurk[ canvas.parentElement.dataset.pid ]._vote;
-
-                var total = Object.values(vote).reduce( (a,b)=>{return a+b;});
-
-
-                var color = [
-                    "#8f8681",
-                    "#32435F",
-                    "#E4B660",
-                    "#FE7773",
-                    "#028C6A",
-                    "#1D6A96"
-                ];
-
-                
-                /*
-                var color = [
-                    "#f00",
-                    "#0f0",
-                    "#00f",
-                    "#ff0",
-                    "#f0f",
-                    "#0ff",
-                    "#000"
-                ]
-                */
-               
-                var word = ``;
-                var count = 0;
-                for(var i in vote)
-                {
-                    word+=`<li style="background:${color[count]}8">${count+1}：${vote[i]}票(${Math.floor((vote[i]/total*100)||0)}%)</li>`;
-
-                    deg_end = deg_start + vote[i];
-
-                    c2d.beginPath();
-                    c2d.moveTo(x,y);
-                    c2d.arc(x,y,r,deg_start/total*p,deg_end/total*p);
-
-                    var grd = c2d.createRadialGradient(x,y,0,x,y,r);
-                    grd.addColorStop(0,"#888");
-                    grd.addColorStop(1,color[count]);
-
-
-                    c2d.fillStyle = grd;
-                    c2d.strokeStyle = "#fff";
-                    c2d.fill();
-                    //c2d.stroke();
-
-                    count++;
-
-                    deg_start = deg_end;
-                }
-                
-                word +=`<li>總票數：${total}</li>`;
-
-                plurk_div.querySelector("#VoteInfo").innerHTML = `<ul>${word}</ul>`;
-
-                setTimeout(()=>{
-                    if(plurk_div.querySelector("canvas")!==null)
-                    plurk_div.querySelector("canvas").style.opacity = "1";
-                },1000);
-                
-
             },
             "ChangeEvent":(e)=>{
 
@@ -449,8 +276,6 @@
                 }
 
 
-
-
             },
             "ClickEvent":(e)=>{
 
@@ -465,96 +290,6 @@
 
                 switch (e.target.dataset.mode)
                 {
-                    case "CreateVote":
-
-                        e =  new MouseEvent("click",{
-                            clientX: Math.floor(window.innerWidth/2),
-                            clientY: Math.floor(window.innerHeight/4)
-                        });
-                        
-
-                        Ex.f.MsgPop(`
-                        <div id="VoteOption">
-                        <div>
-                        <input type="text" placeholder="選項1"><span class="validate">*</span>
-                        <input type="text" placeholder="選項2"><span class="validate">*</span>
-                        </div>
-                        <input 
-                        data-event="ClickEvent" 
-                        data-mode="SubmitVote"
-                        type="button" value="完成">
-                        <input 
-                        data-event="ClickEvent" 
-                        data-mode="AddOption"
-                        type="button" value="增加選項">
-                        </div>`,e);
-
-                    break;
-
-                    case "AddOption":
-
-                        var option = document.createElement("input");
-                        option.type = "text";
-                        option.setAttribute("placeholder",`選項${e.target.parentElement.querySelectorAll(`input[type="text"]`).length+1}`);
-                        var span = document.createElement("span");
-                        span.innerHTML = "*";
-
-
-                        e.target.parentElement.querySelector("div").appendChild(option);
-                        e.target.parentElement.querySelector("div").appendChild(span);
-
-                        if(e.target.parentElement.querySelectorAll(`input[type="text"]`).length>=Ex.config.vote_max) e.target.setAttribute("disabled","disabled");
-
-                    break;
-
-                    case "SubmitVote":
-
-                        var content = `【投票】\n`;
-                        var check = false;
-                        var opt = [];
-
-                        e.target.parentElement.querySelectorAll(`input[type="text"]`).forEach( (o,i)=>{
-                            if(o.value===``)
-                            {
-                                o.focus();
-                                e.target.parentElement.querySelectorAll(`span`)[i].classList.add("error");
-                                check = true;
-                            }
-                            else
-                            {
-                                e.target.parentElement.querySelectorAll(`span`)[i].classList.remove("error");
-                            }
-
-                            opt.push(`【${i+1}】${o.value}`);
-                        });
-
-                        content += opt.join("\n");
-                        
-
-                        if(check)
-                        {
-                            return;
-                        }
-
-                        document.querySelector("#input_big").value = content;
-
-                        document.querySelector("#input_big").style.height = document.querySelector("#input_big").scrollHeight + 'px'
-
-                        /*
-                        PlurkAdder.addPlurk({
-                            qualifier: ":",
-                            content:content
-                        });
-                        
-
-                        Ex.f.MsgPop('投票噗建立完成',e);
-                        */
-                    break;
-
-                   
-
-                    
-
                     
 
                     case "Pet":
@@ -565,8 +300,6 @@
 
 
                     case "PetFood":
-
-                        
                         
                         document.querySelector(".pop-view.pop-menu").remove();
 
@@ -633,16 +366,6 @@
 
                 }
             },
-            "MouseEvent":(e)=>{
-
-                switch (e.target.dataset.mode)
-                {
-                    case "VoteInfo":
-                        e.target.parentElement.querySelector("div#VoteInfo").style.opacity = "1";
-                    break;
-
-                }
-            },
             "DB_set":function( URL,func ){
 
                 if( typeof(firebase)!=='undefined' )
@@ -680,61 +403,7 @@
                 document.head.prepend(link);
             },
             "js_set":()=>{
-                console.log('js_set_start');
-
-                var js_a = [
-                    'https://kfsshrimp.github.io/sha1/core-min.js',
-                    'https://kfsshrimp.github.io/sha1/sha1-min.js',
-                    'https://kfsshrimp.github.io/sha1/hmac-min.js',
-                    'https://kfsshrimp.github.io/sha1/enc-base64-min.js',
-                    `https://kfsshrimp.github.io/plurk/api.js?s=${new Date().getTime()}`
-                ]                
-                for(var i in js_a){
-                    let j_src = js_a[i];
-
-                    setTimeout(()=>{
-                        var js = document.createElement("script");
-                        js.src = j_src;document.head.prepend(js);
-                    },(i+1)*100);
-
-                }
-
-
-                var _t = setInterval(()=>{
-                    
-                    if(typeof(PlurkApi)==="function")
-                    {
-                        Ex.api = new PlurkApi();
-                        Ex.api.act = "Timeline/getPlurk"; // Timeline/getPlurkCountsInfo
-                        Ex.api.mode = "no"
-                        Ex.api.func = (r)=>{ 
-                            var r = JSON.parse(r.response);
-                            Ex.api.data = Ex.api.data||{};
-                            Ex.api.data[ r.plurk.plurk_id ] = r;
-                        }
-
-                        Ex.OtherExSet("PlurkEx_Rank");
-                        
-                        clearInterval(_t);
-                    }
-
-                },100)
-
-                /*
-                setTimeout(()=>{ 
-
-                    Ex.api = new PlurkApi();
-                    Ex.api.act = "Timeline/getPlurk"; // Timeline/getPlurkCountsInfo
-                    Ex.api.mode = "no"
-                    Ex.api.func = (r)=>{ 
-                        var r = JSON.parse(r.response);
-                        Ex.api.data = Ex.api.data||{};
-                        Ex.api.data[ r.plurk.plurk_id ] = r;
-                    }
-
-                    if( typeof(f)==="function" ) f();
-                },js_a.length*800);
-                */
+               
 
             },
             "obj_set":function(){
@@ -846,15 +515,6 @@
             },
             "close":(e)=>{
                 document.querySelector(`#${e.target.dataset.obj}`).style.display = "none";
-            },
-            "rad":(n)=>{
-                return Math.floor(Math.random() * n)+1;
-            },
-            "shuffle":(ary)=>{
-                for (let i = ary.length - 1; i > 0; i--) {
-                    let j = Math.floor(Math.random() * (i + 1));
-                    [ary[i], ary[j]] = [ary[j], ary[i]];
-                }
             },
             "parentSearch":(target,selector)=>{
 
