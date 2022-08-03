@@ -60,7 +60,8 @@ class JsCssSet {
         "manhuagui",
         "wnacg",
         "chobit",
-        "animeVideo"
+        "animeVideo",
+        "ani"
     ];
     var src;
     
