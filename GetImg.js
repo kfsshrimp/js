@@ -177,9 +177,9 @@ class GetImg{
 
         if(e.path.indexOf(this.GetImgDiv)!==-1)
         {
-            this.GetImgDiv.style.height = (this.GetImgDiv.style.height!==this.thumb_size)?this.thumb_size:`${this.video.clientHeight}px`;
+            this.GetImgDiv.style.height = (this.GetImgDiv.style.height!==this.thumb_size)?this.thumb_size:`${this.video.videoHeight}px`;
 
-            this.GetImgDiv.style.width = (this.GetImgDiv.style.width!==this.thumb_size)?this.thumb_size:`${this.video.clientWidth}px`;
+            this.GetImgDiv.style.width = (this.GetImgDiv.style.width!==this.thumb_size)?this.thumb_size:`${this.video.videoWidth}px`;
 
             this.SetSecSearch();
         }
@@ -330,13 +330,13 @@ class GetImg{
         
 
 
-        canvas.width = video.clientWidth;
-        canvas.height = video.clientHeight;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
         (canvas.width>canvas.height)?canvas.style.width = 'inherit':canvas.style.height = 'inherit'
 
 
-        c2d.drawImage(video,0,0,video.clientWidth,video.clientHeight);
+        c2d.drawImage(video,0,0,video.videoWidth,video.videoHeight);
 
 
         
