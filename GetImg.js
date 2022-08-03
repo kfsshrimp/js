@@ -113,8 +113,8 @@ class GetImg{
             <input data-mode="cut" type="button" value="截圖">
             <input data-mode="display" type="button" value="隱藏">
             <input data-mode="clear" type="button" value="清除">
-            <input data-keydown="${this.NextPrev.prev}" data-mode="prev" type="button" value="<<">
-            <input data-keydown="${this.NextPrev.next}" data-mode="next" type="button" value=">>">
+            <input style="display:none;" data-keydown="${this.NextPrev.prev}" data-mode="prev" type="button" value="<<">
+            <input style="display:none;" data-keydown="${this.NextPrev.next}" data-mode="next" type="button" value=">>">
         `;
 
 
@@ -419,3 +419,20 @@ class GetImg{
 
 
 }
+
+
+
+/*
+https://pbs.twimg.com/media/FZJeHIHUIAAH93M?format=jpg&name=large
+
+
+
+
+var canvas = document.createElement("canvas");
+var c2d = canvas.getContext("2d");
+canvas.width = temp1.naturalWidth;
+canvas.height = temp1.naturalHeight;
+c2d.drawImage(temp1,0,0,temp1.naturalWidth,temp1.naturalHeight);
+document.body.prepend(canvas);
+
+*/
