@@ -11,9 +11,18 @@ class GetImg{
         
         this.video = config.video||document.querySelector("video");
         this.GetImgDiv = config.GetImgDiv||document.querySelector("body");
-        this.thumb_size = config.thumb_size||'120px';
+        this.thumb_size = config.thumb_size||'200px';
         this.quick_key = config.quick_key||'Q';
-        this.loop_sec = config.loop_sec||100;
+        this.loop_sec = config.loop_sec||50;
+        //this.NextPrev = config.NextPrev||{next:'ArrowRight',prev:'ArrowLeft'};
+        //this.NextPrev = config.NextPrev||{next:'x',prev:'z'};
+
+        this.NextPrev = {
+            next:((config.NextPrev)?config.NextPrev.next:null)||'x',
+            prev:((config.NextPrev)?config.NextPrev.prev:null)||'z'
+        };
+
+
 
         this.canvas_list = [];
         //this.canvas_search = [];
@@ -39,8 +48,8 @@ class GetImg{
 
             switch (e.key)
             {
-                case "ArrowRight":
-                case "ArrowLeft":
+                case this.NextPrev.next:
+                case this.NextPrev.prev:
                     document.querySelector(`[data-keydown="${e.key}"]`).click();
                 break;
 
@@ -104,8 +113,8 @@ class GetImg{
             <input data-mode="cut" type="button" value="截圖">
             <input data-mode="display" type="button" value="隱藏">
             <input data-mode="clear" type="button" value="清除">
-            <input data-keydown="ArrowLeft" data-mode="prev" type="button" value="<<">
-            <input data-keydown="ArrowRight" data-mode="next" type="button" value=">>">
+            <input data-keydown="${this.NextPrev.prev}" data-mode="prev" type="button" value="<<">
+            <input data-keydown="${this.NextPrev.next}" data-mode="next" type="button" value=">>">
         `;
 
 
