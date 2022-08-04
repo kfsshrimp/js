@@ -46,6 +46,8 @@ class GetImg{
 
         document.addEventListener("keydown",(e)=>{
 
+            console.log(e.key);
+
             switch (e.key)
             {
                 case this.NextPrev.next:
