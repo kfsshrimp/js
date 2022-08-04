@@ -177,9 +177,9 @@ class GetImg{
 
         if(e.path.indexOf(this.GetImgDiv)!==-1)
         {
-            this.GetImgDiv.style.height = (this.GetImgDiv.style.height!==this.thumb_size)?this.thumb_size:`${this.video.height}px`;
+            this.GetImgDiv.style.height = (this.GetImgDiv.style.height!==this.thumb_size)?this.thumb_size:`${this.video.clientHeight}px`;
 
-            this.GetImgDiv.style.width = (this.GetImgDiv.style.width!==this.thumb_size)?this.thumb_size:`${this.video.width}px`;
+            this.GetImgDiv.style.width = (this.GetImgDiv.style.width!==this.thumb_size)?this.thumb_size:`${this.video.clientWidth}px`;
 
             this.SetSecSearch();
         }
