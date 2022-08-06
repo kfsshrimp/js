@@ -12,14 +12,14 @@ class GetImg{
         this.video = config.video||document.querySelector("video");
         this.GetImgDiv = config.GetImgDiv||document.querySelector("body");
         this.thumb_size = config.thumb_size||'200px';
-        this.quick_key = config.quick_key||'Q';
+        this.quick_key = config.quick_key.toString().toUpperCase()|'Q';
         this.loop_sec = config.loop_sec||50;
         //this.NextPrev = config.NextPrev||{next:'ArrowRight',prev:'ArrowLeft'};
         //this.NextPrev = config.NextPrev||{next:'x',prev:'z'};
 
         this.NextPrev = {
-            next:((config.NextPrev)?config.NextPrev.next:null)||'x',
-            prev:((config.NextPrev)?config.NextPrev.prev:null)||'z'
+            next:((config.NextPrev)?config.NextPrev.next:null).toString().toUpperCase()||'X',
+            prev:((config.NextPrev)?config.NextPrev.prev:null).toString().toUpperCase()||'Z'
         };
 
 
@@ -46,18 +46,20 @@ class GetImg{
 
         document.addEventListener("keydown",(e)=>{
 
-            console.log(e.key);
 
-            switch (e.key)
+            var key = e.key.toString().toUpperCase();
+
+            switch (key)
             {
                 case this.NextPrev.next:
                 case this.NextPrev.prev:
-                    document.querySelector(`[data-keydown="${e.key}"]`).click();
+
+                    document.querySelector(`[data-keydown="${key}"]`).click();
                 break;
 
                 default :
 
-                    if(e.key.toString().toUpperCase()===this.quick_key.toString().toUpperCase())
+                    if(key===this.quick_key)
                     {
                         this.CutVideo();
                     }
