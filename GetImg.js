@@ -12,14 +12,14 @@ class GetImg{
         this.video = config.video||document.querySelector("video");
         this.GetImgDiv = config.GetImgDiv||document.querySelector("body");
         this.thumb_size = config.thumb_size||'200px';
-        this.quick_key = config.quick_key.toString().toUpperCase()|'Q';
+        this.quick_key = (config.quick_key|'Q').toString().toUpperCase();
         this.loop_sec = config.loop_sec||50;
         //this.NextPrev = config.NextPrev||{next:'ArrowRight',prev:'ArrowLeft'};
         //this.NextPrev = config.NextPrev||{next:'x',prev:'z'};
 
         this.NextPrev = {
-            next:((config.NextPrev)?config.NextPrev.next:null).toString().toUpperCase()||'X',
-            prev:((config.NextPrev)?config.NextPrev.prev:null).toString().toUpperCase()||'Z'
+            next:(((config.NextPrev)?config.NextPrev.next:null)||'X').toString().toUpperCase(),
+            prev:(((config.NextPrev)?config.NextPrev.prev:null)||'Z').toString().toUpperCase()
         };
 
 
