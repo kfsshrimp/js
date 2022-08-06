@@ -49,6 +49,13 @@ class GetImg{
 
             var key = e.key.toString().toUpperCase();
 
+
+            if(document.querySelector(`[data-keydown="${key}"]`)!==null)
+            {
+                document.querySelector(`[data-keydown="${key}"]`).click();
+            }
+
+            /*
             switch (key)
             {
                 case this.NextPrev.next:
@@ -66,6 +73,7 @@ class GetImg{
                     
                 break;
             }
+            */
 
         });
 
@@ -114,7 +122,7 @@ class GetImg{
             <input data-mode="search" value="0" type="number" max="59" min="0">
             <input data-mode="search" value="0" type="number" max="59" min="0">
             <input data-mode="cut_loop" type="button" value="開始">
-            <input data-mode="cut" type="button" value="截圖">
+            <input style="display:none;"data-keydown="${this.quick_key}"  data-mode="cut" type="button" value="截圖">
             <input data-mode="display" type="button" value="隱藏">
             <input data-mode="clear" type="button" value="清除">
             <input style="display:none;" data-keydown="${this.NextPrev.prev}" data-mode="prev" type="button" value="<<">
