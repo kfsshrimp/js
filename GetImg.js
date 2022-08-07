@@ -39,7 +39,8 @@ class GetImg{
             x:5,
             y:5,
             fillStyle:"#fff",
-            strokeStyle:"#000"
+            strokeStyle:"#000",
+            on:true
         }
 
         document.addEventListener("mousedown",(e)=>{
@@ -353,7 +354,7 @@ class GetImg{
         c2d.drawImage(video,0,0,video.videoWidth,video.videoHeight);
 
 
-        
+        if(this.watermark.on)
         this.WaterMark(c2d);
         this.SaveMemory(canvas);
         
