@@ -42,7 +42,8 @@ function PlurkApi( opt = {} )
         "&offset",
         "minimal_data&",
         "minimal_user&",
-        "&only_user"
+        "&only_user",
+        "&user_id"
     ];
 
     this.Send = ()=>{
@@ -148,6 +149,25 @@ function PlurkApi( opt = {} )
                 this.SBS = 
                 this.arg.nick_name +
                 "oauth_consumer_key="+x[0]+"&oauth_nonce="+nonce()+"&oauth_signature_method=HMAC-SHA1&oauth_timestamp="+timestamp()+"&oauth_token="+x[2]+"&oauth_version=1.0";
+
+            break;
+
+
+            case "FriendsFans/getFansByOffset":
+
+                this.SBS = 
+                this.arg.limit + 
+                `minimal_data=false&` + 
+                `oauth_consumer_key=${x[0]}&` + 
+                `oauth_nonce=${nonce()}&` + 
+                `oauth_signature_method=HMAC-SHA1&`+
+                `oauth_timestamp=${timestamp()}&` + 
+                `oauth_token=${x[2]}&` + 
+                `oauth_version=1.0` + 
+                this.arg.offset + 
+                this.arg.user_id;
+
+
 
             break;
 
