@@ -43,8 +43,10 @@ function PlurkApi( opt = {} )
         "minimal_data&",
         "minimal_user&",
         "&only_user",
-        "&user_id"
+        "&user_id",
+        "include_plurks&",
     ];
+
 
     this.Send = ()=>{
 
@@ -147,7 +149,8 @@ function PlurkApi( opt = {} )
             case "Profile/getPublicProfile":
 
                 this.SBS = 
-                "include_plurks=false&minimal_data=true&" + 
+                this.arg.include_plurks + 
+                this.arg.minimal_data + 
                 this.arg.nick_name + 
                 "oauth_consumer_key="+x[0]+"&oauth_nonce="+nonce()+"&oauth_signature_method=HMAC-SHA1&oauth_timestamp="+timestamp()+"&oauth_token="+x[2]+"&oauth_version=1.0";
 
