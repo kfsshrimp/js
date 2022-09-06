@@ -147,7 +147,8 @@ function PlurkApi( opt = {} )
             case "Profile/getPublicProfile":
 
                 this.SBS = 
-                this.arg.nick_name +
+                "include_plurks=false&minimal_data=true&" + 
+                this.arg.nick_name + 
                 "oauth_consumer_key="+x[0]+"&oauth_nonce="+nonce()+"&oauth_signature_method=HMAC-SHA1&oauth_timestamp="+timestamp()+"&oauth_token="+x[2]+"&oauth_version=1.0";
 
             break;
@@ -196,6 +197,7 @@ function PlurkApi( opt = {} )
         //Data url 順序隨意
         var url = (this.mode==="CORS")?config.CORS + ("app="+this.act+"&oauth_signature="+oauth_signature +"&"+ this.SBS):"https://www.plurk.com/APP/"+this.act+"?oauth_signature="+oauth_signature +"&"+ this.SBS;
         
+
         var xml;
         xml = new XMLHttpRequest();
         xml.open("GET",url, config.XmlAsync );
