@@ -175,6 +175,24 @@ function PlurkApi( opt = {} )
 
             break;
 
+            case "FriendsFans/getFriendsByOffset":
+
+                this.SBS = 
+                this.arg.limit + 
+                `minimal_data=false&` + 
+                `oauth_consumer_key=${x[0]}&` + 
+                `oauth_nonce=${nonce()}&` + 
+                `oauth_signature_method=HMAC-SHA1&`+
+                `oauth_timestamp=${timestamp()}&` + 
+                `oauth_token=${x[2]}&` + 
+                `oauth_version=1.0` + 
+                this.arg.offset + 
+                this.arg.user_id;
+
+
+
+            break;
+
 
             case "checkTime":
                 this.SBS = 
