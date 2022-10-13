@@ -1,10 +1,12 @@
+//https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.2/rollups/aes.js
+
 function PlurkApi( opt = {} )
 {
     var config = {
         //"CORS":"https://cors-anywhere.herokuapp.com/",
         //"CORS":"https://api.allorigins.win/get?url=",
         "CORS":"https://us-central1-kfs-plurk.cloudfunctions.net/corsAnyWhere?",
-        "XmlAsync":false
+        "XmlAsync":true
 
     };
 
