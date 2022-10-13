@@ -6,7 +6,7 @@ function PlurkApi( opt = {} )
         //"CORS":"https://cors-anywhere.herokuapp.com/",
         //"CORS":"https://api.allorigins.win/get?url=",
         "CORS":"https://us-central1-kfs-plurk.cloudfunctions.net/corsAnyWhere?",
-        "XmlAsync":true
+        "XmlAsync":false
 
     };
 
