@@ -190,7 +190,11 @@ class GetImg{
 
     ClickEvent = (e)=>{
 
-        if(e.path.indexOf(this.GetImgDiv)!==-1)
+        console.log(e);
+
+        var path = e.path||e.composedPath();
+
+        if(path.indexOf(this.GetImgDiv)!==-1)
         {
             this.GetImgDiv.style.height = (this.GetImgDiv.style.height!==this.thumb_size)?this.thumb_size:`${this.video.clientHeight}px`;
 
@@ -199,7 +203,7 @@ class GetImg{
             this.SetSecSearch();
         }
 
-        if(e.path.indexOf(this.ControlBarDiv)!==-1) this.ControlBtnClick(e);
+        if(path.indexOf(this.ControlBarDiv)!==-1) this.ControlBtnClick(e);
 
     }
 
