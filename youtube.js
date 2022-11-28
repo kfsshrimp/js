@@ -1,7 +1,7 @@
-var Ex;
+//var Ex;
 (()=>{
 
-    Ex = {
+    var Ex = {
         "id":"youtube",
         "DB":false,
         "Storage":{
@@ -37,6 +37,59 @@ var Ex;
         "template":{},
         "obj":{},
         "f":{
+            //YT表符UI優化 2022.11.28
+            YtChatEmoji:(iframe,height = 300)=>{
+
+                var _document = iframe.contentDocument;
+
+
+                _document.querySelector("yt-emoji-picker-renderer").style.height = `${height}px`;
+                _document.querySelector("yt-emoji-picker-renderer").style.maxHeight = `${height}px`;
+                
+                
+                var _t = setInterval(()=>{
+                
+                
+                
+                    _document.querySelectorAll("yt-emoji-picker-category-button-renderer").forEach(picker=>{
+                
+                
+                        _document.querySelectorAll(`#categories #emoji[role="listbox"]`)
+                
+                
+                        _document.querySelectorAll("yt-emoji-picker-category-renderer").forEach(emoji=>{
+                            emoji.style.display = "none";
+                        });
+                
+                        
+                        
+                        var btn = picker.querySelector("button");
+                        
+                    
+                        picker.addEventListener("click",()=>{
+                
+                            _document.querySelectorAll("yt-emoji-picker-category-renderer").forEach(emoji=>{
+                                emoji.style.display = "none";
+                            });
+                    
+                    
+                            var emoji_block = _document.querySelector(`yt-emoji-picker-category-renderer[aria-activedescendant^="${picker.id}"]`)||_document.querySelector(`yt-emoji-picker-category-renderer[aria-label="${btn.getAttribute("aria-label")}"]`);
+                    
+                            
+                            emoji_block.style.display = "block";
+                    
+                        });
+                    });
+                
+                    if(_document.querySelectorAll("yt-emoji-picker-category-button-renderer").length>0) clearInterval(_t);
+                
+                
+                
+                },1000);
+                
+
+
+            },
             "ChatEx":()=>{
 
                 var yt_id = Ex.config.yt_id;
@@ -269,6 +322,8 @@ var Ex;
                 data-event="ClickEvent" data-mode="PopVideo"></div>
                 </div>
 
+                
+                <!--
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
                 <div class="ytp-menuitem-icon" 
                 data-event="ClickEvent" data-mode="ChatRecord"></div>
@@ -278,7 +333,6 @@ var Ex;
                 data-event="ClickEvent" data-mode="ChatRecord"></div>
                 </div>
 
-                <!--
                 <div id="${Ex.id}" class="ytp-menuitem" aria-checked="true">
                 <div class="ytp-menuitem-icon" 
                 data-event="ClickEvent" data-mode="SpeechRecord"></div>
@@ -798,6 +852,9 @@ var Ex;
                 Ex.f.style_set();
                 Ex.f.obj_set();
                 Ex.f.custome_obj_set();
+
+
+                Ex.f.YtChatEmoji(document.querySelector("iframe"));
 
                 Ex.f.js_set(
                     ['https://kfsshrimp.github.io/js/GetImg.js']
