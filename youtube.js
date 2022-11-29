@@ -43,6 +43,8 @@
                 var _document = iframe.contentDocument;
 
 
+                if(_document.querySelector("yt-emoji-picker-renderer")===null) return;
+
                 _document.querySelector("yt-emoji-picker-renderer").style.height = `${height}px`;
                 _document.querySelector("yt-emoji-picker-renderer").style.maxHeight = `${height}px`;
                 
