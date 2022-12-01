@@ -38,7 +38,7 @@
         "obj":{},
         "f":{
             //YT表符UI優化 2022.11.28
-            YtChatEmoji:(iframe,height = 300)=>{
+            YtChatEmoji:(iframe,height = 240)=>{
 
                 var _document = iframe.contentDocument;
 
