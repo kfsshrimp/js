@@ -4,114 +4,312 @@ class ClassEx {
 
         this.ExId = "kfsshrimpEx";
 
-        this.WebCfg =  {
-            all:{
-                style:`
-                    #MsgPop{
-                        position:fixed;
-                        z-index: 9999;
-                        padding: 10px;
-                        border-radius: 5px;
-                        background: #000;
-                        color: #fff;
-                        text-align: center;
-                        font-size: 10px;
-                        border: 2px #0a0 solid;
-                        top: 30%;
-                        left: 30%;
-                    }
-                    canvas.Screenshot{
-                        top: 0px;
-                        left: 0px;
-                        position: absolute;
-                        z-index: 9999;
-                        cursor: pointer;
-                    }                
-                `
+        this.Style = {
+            all:`
+                #MsgPop{
+                    position:fixed;
+                    z-index: 9999;
+                    padding: 10px;
+                    border-radius: 5px;
+                    background: #000;
+                    color: #fff;
+                    text-align: center;
+                    font-size: 10px;
+                    border: 2px #0a0 solid;
+                    top: 30%;
+                    left: 30%;
+                }
+                canvas.Screenshot{
+                    top: 0px;
+                    left: 0px;
+                    position: absolute;
+                    z-index: 9999;
+                    cursor: pointer;
+                }                
+            `,
+            plurk:`
+                .img-holder{
+                    overflow:hidden !important;
+                }
+                .cbox_img{
+                    width:auto !important;
+                    max-height:100%;
+                }
+            `,
+            nicovideo:`
+                button[data-href]{
+                    border: solid 2px #f00;
+                    border-radius: 5px;
+                    height: 25px;
+                }
+                button[data-href]:hover{
+                    border: solid 2px #000;
+                    background: #000;
+                    color: #fff;
+                }
+            `,
+            youtube:`
+                yt-emoji-picker-renderer{
+                    height:280px !IMPORTANT;
+                    max-height:280px !IMPORTANT;
+                }
+            `,
+            nhentai:`
+                #image-container img{
+                    position: absolute;
+                    left:0px;
+                    top:0px;
+                    width:auto;
+                    height:${window.innerHeight}px !IMPORTANT;
+                    z-index: 9999;
+                }
+            ` ,
+            wnacg:`
+                #photo_body{
+                    position: absolute;
+                    left:0px;
+                    top:0px;
+                    z-index: 9999;
+                }
+                #photo_body .photo{
+                    padding:0px;
+                    border:none;
+                }
+                #picarea{
+                    height: ${window.innerHeight}px;
+                }
+                #imgarea img{
+                    margin:0px;
+                    padding:0px;
+                }
+            `
+        }
+        this.Func = {
+            twitter:()=>{
+                var _run = false;
+                document.addEventListener("mousemove",()=>{
+        
+                    if(_run) return;
+        
+                    _run = true;
+        
+                    document.querySelectorAll(`li[role="listitem"] div[role="button"],div[data-testid="cellInnerDiv"] div[aria-labelledby] div[role="button"]`).forEach(btn=>{
+        
+        
+                        if(btn.querySelector("span")!==null){
+        
+                            if(btn.querySelector("span").innerHTML==="顯示")btn.click();
+        
+                            if(btn.querySelector("span").lastChild!==null)
+                            if(btn.querySelector("span").lastChild.innerHTML==="顯示")btn.click();
+                        }
+                        
+                    });
+        
+        
+                    setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
+        
+                });                    
             },
-            twitter:{
+            nicovideo:()=>{
 
-                
+                console.log('nicovideo')
+        
+        
+                var _run = false;
+                document.addEventListener("mousemove",()=>{
+        
+                    if(_run) return;
+        
+                    _run = true;
+        
+                    document.querySelectorAll(`.VideoMediaObjectList a[href*="watch"],.videoList01 a[href*="watch"],.contents_list .item_right a[href*="watch"]`).forEach(link=>{
+        
+                        if(
+                            document.querySelector(`[data-href="${link.getAttribute("href")}"]`)!==null || 
+                            document.querySelector(`[data-href="https://www.nicovideo.jp${link.getAttribute("href")}"]`)!==null) return;
+                        
+        
+                        let btn = document.createElement("button");
+                        btn.innerHTML = "YTDL";
+        
+                        btn.dataset.href = (link.getAttribute("href").indexOf("http")===-1)?`https://www.nicovideo.jp${link.getAttribute("href")}`:link.getAttribute("href");
+        
+        
+                        btn.addEventListener("click",this.YTDL);
+                        link.parentElement.appendChild(btn);
+                    });
+        
+                    setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
+        
+                });        
             },
-            chobit:{
+            youtube:()=>{
 
-            },
-            gamer:{
 
+                var video = document.querySelector("video");
+                var owner = document.querySelector("div#owner");
+        
+                if(location.pathname==='/live_chat') return;
+        
+                if(video===null || owner===null){
+                    console.log('no video');
+                    setTimeout(()=>{
+        
+                        this.youtube();
+        
+                    },100);
+                    return;
+                }
+        
+                var div = document.createElement("div");
+                div.id = `${this.ExId}-Timer`;
+                div.style = `
+                    margin: 0px 10px;
+                    padding: 2px 10px;
+                    background: #fff;
+                    color: #000;
+                    height: 30px;
+                    border-radius: 5px;
+                    font-size: 20px;
+                `;
+                div.innerHTML = `${this.SecToTime(Math.floor(video.currentTime))}`;
+        
+                document.querySelector("div#owner").appendChild(div);
+        
+        
+                var _run = false;
+                document.addEventListener("mousemove",()=>{
+        
+                    if(_run) return;
+        
+                    _run = true;
+        
+        
+                    video = document.querySelector("video")
+        
+                    div.innerHTML = `${this.SecToTime(Math.floor(video.currentTime))}`;
+        
+                    if(document.querySelector("iframe").contentDocument.querySelector("yt-emoji-picker-renderer")!==null){
+                        document.querySelector("iframe").contentDocument.querySelector("yt-emoji-picker-renderer").style = `
+                                height:320px !IMPORTANT;
+                                max-height:320px !IMPORTANT;
+                            `;
+                    }
+        
+                    document.querySelectorAll(`a#video-title[href*="watch"][title],
+                    a#video-title-link[href*="watch"][title],
+                    a.yt-simple-endpoint[href*="shorts"][title]`).forEach(link=>{
+        
+                        
+        
+                        if( link.parentElement.querySelector("button")!==null){
+        
+                            if( link.parentElement.querySelector("button").dataset.href===`https://www.youtube.com${link.getAttribute("href")}` ){
+        
+                                return;
+        
+                            }else{
+                                
+                                link.parentElement.querySelector("button").remove();
+        
+                            }
+        
+                        }
+                        
+                        
+        
+                        let btn = document.createElement("button");
+                        btn.innerHTML = "YTDL";
+                        btn.dataset.href = `https://www.youtube.com${link.getAttribute("href")}`;
+                        btn.addEventListener("click",this.YTDL);
+                        link.parentElement.appendChild(btn);
+                    });
+        
+                    setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
+                    
+                });
+        
             },
-            pixiv:{
+            nhentai:()=>{
+
+                if(
+                    document.querySelector(".next")!==null && 
+                document.querySelector("#image-container")!==null){
+        
+                    /*
+                    setInterval(()=>{
+                        console.log('next');
+                        document.querySelector(".next").click()
+                    },1000 * 10);
+                    */
+        
+                }
                 
+        
             },
-            plurk:{
-                style:`
-                    .img-holder{
-                        overflow:hidden !important;
-                    }
-                    .cbox_img{
-                        width:auto !important;
-                        max-height:100%;
-                    }
-                `
+            wnacg:()=>{
+        
+                if(document.querySelectorAll(`.newpage .btntuzao`).length!==0){
+        
+                    setTimeout(()=>{
+                        console.log('next');
+                        document.querySelectorAll(`.newpage .btntuzao`)[1].click()
+                    },1000 * 10);
+        
+                }
+        
+        
             },
-            nicovideo:{
-                style:`
-                    button[data-href]{
-                        border: solid 2px #f00;
-                        border-radius: 5px;
-                        height: 25px;
-                    }
-                    button[data-href]:hover{
-                        border: solid 2px #000;
-                        background: #000;
-                        color: #fff;
-                    }
-                `
+            manhuagui:()=>{
+
+                var _run = false;
+        
+                document.addEventListener("mousemove",()=>{
+        
+                    if(_run) return;
+        
+                    _run = true;
+        
+                    document.querySelectorAll("img").forEach(o=>{
                 
+                        if(o.dataset.oncontextmenu!=="register")
+                        {
+                            o.oncontextmenu = function(){
+                        
+                                var n_w = window.open("",``,`width=${window.innerWidth/2},height=${window.innerHeight}`);
+                                n_w.document.body.style = "margin:0px;padding:0px;";
+                                n_w.document.body.innerHTML = `<img style="max-height:100%;max-width:100%;" src="${o.src}">`;
+                            }
+            
+                            o.dataset.oncontextmenu = "register";
+                        }
+            
+                    });
+        
+                    setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
+        
+                })
+        
             },
-            youtube:{
-                style:`
-                    yt-emoji-picker-renderer{
-                        height:280px !IMPORTANT;
-                        max-height:280px !IMPORTANT;
-                    }
-                `
-            },
-            nhentai:{
-                style:`
-                    #image-container img{
-                        position: absolute;
-                        left:0px;
-                        top:0px;
-                        width:auto;
-                        height:${window.innerHeight}px !IMPORTANT;
-                        z-index: 9999;
-                    }
-                `
-            },
-            wnacg:{
-                style:`
-                    #photo_body{
-                        position: absolute;
-                        left:0px;
-                        top:0px;
-                        z-index: 9999;
-                    }
-                    #photo_body .photo{
-                        padding:0px;
-                        border:none;
-                    }
-                    #picarea{
-                        height: ${window.innerHeight}px;
-                    }
-                    #imgarea img{
-                        margin:0px;
-                        padding:0px;
-                    }
-                `
-            },
-            manhuagui:{
-                style:``
+            chobit:()=>{
+        
+        
+                var list_div = document.createElement("div");
+                document.querySelectorAll(".track-list li").forEach(o=>{ 
+                    list_div.innerHTML += `<a target="_blank" href="${o.dataset.src}">${o.dataset.title}</a><BR>`;
+                });
+                
+                document.querySelector(".file-info-box").prepend(list_div);
             }
+
+
+
+        }
+
+
+        this.WebCfg =  {
+            
         };
 
         this.Web = "";
@@ -158,14 +356,18 @@ class ClassEx {
 
         this.MsgPop( `LOAD Class ${this.ExId}` );
 
+        this.StyleSet();
 
+        
 
         location.host.split(".").every(url=>{
 
-            if(Object.keys(this.WebCfg).find(list=>list===url)!==undefined)
-                this.Web = Object.keys(this.WebCfg).find(list=>list===url);
 
-            this.StyleSet();
+            if(Object.keys(this.Func).find(list=>list===url)!==undefined)
+                this.Web = Object.keys(this.Func).find(list=>list===url);
+
+
+                console.log(this.Web);
 
             if(this[ this.Web ]!==undefined){
 
@@ -176,266 +378,28 @@ class ClassEx {
             }
 
             return true;
-        });
-
-
-        
-        console.log(this);
-
-
-    }
-
-
-    pixiv = ()=>{
-
-
-    }
-
-    plurk = ()=>{
-
-
-    }
-
-
-    twitter = ()=>{
-
-        var _run = false;
-        document.addEventListener("mousemove",()=>{
-
-            if(_run) return;
-
-            _run = true;
-
-            document.querySelectorAll(`li[role="listitem"] div[role="button"],div[data-testid="cellInnerDiv"] div[aria-labelledby] div[role="button"]`).forEach(btn=>{
-
-
-                if(btn.querySelector("span")!==null){
-
-                    if(btn.querySelector("span").innerHTML==="顯示")btn.click();
-
-                    if(btn.querySelector("span").lastChild!==null)
-                    if(btn.querySelector("span").lastChild.innerHTML==="顯示")btn.click();
-                }
-                
-            });
-
-
-            setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
-
-        });
-
-    }
-
-    nicovideo = ()=>{
-
-        console.log('nicovideo')
-
-
-        var _run = false;
-        document.addEventListener("mousemove",()=>{
-
-            if(_run) return;
-
-            _run = true;
-
-            document.querySelectorAll(`.VideoMediaObjectList a[href*="watch"],.videoList01 a[href*="watch"],.contents_list .item_right a[href*="watch"]`).forEach(link=>{
-
-                if(
-                    document.querySelector(`[data-href="${link.getAttribute("href")}"]`)!==null || 
-                    document.querySelector(`[data-href="https://www.nicovideo.jp${link.getAttribute("href")}"]`)!==null) return;
-                
-
-                let btn = document.createElement("button");
-                btn.innerHTML = "YTDL";
-
-                btn.dataset.href = (link.getAttribute("href").indexOf("http")===-1)?`https://www.nicovideo.jp${link.getAttribute("href")}`:link.getAttribute("href");
-
-
-                btn.addEventListener("click",this.YTDL);
-                link.parentElement.appendChild(btn);
-            });
-
-            setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
-
-        });
-
-
-    }
-
-
-    youtube = ()=>{
-
-
-        var video = document.querySelector("video");
-        var owner = document.querySelector("div#owner");
-
-        if(location.pathname==='/live_chat') return;
-
-        if(video===null || owner===null){
-            console.log('no video');
-            setTimeout(()=>{
-
-                this.youtube();
-
-            },100);
-            return;
-        }
-
-        var div = document.createElement("div");
-        div.id = `${this.ExId}-Timer`;
-        div.style = `
-            margin: 0px 10px;
-            padding: 2px 10px;
-            background: #fff;
-            color: #000;
-            height: 30px;
-            border-radius: 5px;
-            font-size: 20px;
-        `;
-        div.innerHTML = `${this.SecToTime(Math.floor(video.currentTime))}`;
-
-        document.querySelector("div#owner").appendChild(div);
-
-
-        var _run = false;
-        document.addEventListener("mousemove",()=>{
-
-            if(_run) return;
-
-            _run = true;
-
-
-            video = document.querySelector("video")
-
-            div.innerHTML = `${this.SecToTime(Math.floor(video.currentTime))}`;
-
-            if(document.querySelector("iframe").contentDocument.querySelector("yt-emoji-picker-renderer")!==null){
-                document.querySelector("iframe").contentDocument.querySelector("yt-emoji-picker-renderer").style = `
-                        height:320px !IMPORTANT;
-                        max-height:320px !IMPORTANT;
-                    `;
-            }
-
-            document.querySelectorAll(`a#video-title[href*="watch"][title],
-            a#video-title-link[href*="watch"][title],
-            a.yt-simple-endpoint[href*="shorts"][title]`).forEach(link=>{
-
-                
-
-                if( link.parentElement.querySelector("button")!==null){
-
-                    if( link.parentElement.querySelector("button").dataset.href===`https://www.youtube.com${link.getAttribute("href")}` ){
-
-                        return;
-
-                    }else{
-                        
-                        link.parentElement.querySelector("button").remove();
-
-                    }
-
-                }
-                
-                
-
-                let btn = document.createElement("button");
-                btn.innerHTML = "YTDL";
-                btn.dataset.href = `https://www.youtube.com${link.getAttribute("href")}`;
-                btn.addEventListener("click",this.YTDL);
-                link.parentElement.appendChild(btn);
-            });
-
-            setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
             
         });
 
-
+        console.log(this.Func);
         
         
 
-    }
-
-    nhentai = ()=>{
-
-        if(
-            document.querySelector(".next")!==null && 
-        document.querySelector("#image-container")!==null){
-
-            /*
-            setInterval(()=>{
-                console.log('next');
-                document.querySelector(".next").click()
-            },1000 * 10);
-            */
-
-        }
-        
-
+       
     }
 
 
-    wnacg = ()=>{
-
-        if(document.querySelectorAll(`.newpage .btntuzao`).length!==0){
-
-            setTimeout(()=>{
-                console.log('next');
-                document.querySelectorAll(`.newpage .btntuzao`)[1].click()
-            },1000 * 10);
-
-        }
 
 
-    }
-
-
-    manhuagui = ()=>{
-
-        var _run = false;
-
-        document.addEventListener("mousemove",()=>{
-
-            if(_run) return;
-
-            _run = true;
-
-            document.querySelectorAll("img").forEach(o=>{
-        
-                if(o.dataset.oncontextmenu!=="register")
-                {
-                    o.oncontextmenu = function(){
-                
-                        var n_w = window.open("",``,`width=${window.innerWidth/2},height=${window.innerHeight}`);
-                        n_w.document.body.style = "margin:0px;padding:0px;";
-                        n_w.document.body.innerHTML = `<img style="max-height:100%;max-width:100%;" src="${o.src}">`;
-                    }
-    
-                    o.dataset.oncontextmenu = "register";
-                }
-    
-            });
-
-            setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
-
-        })
-
-        
     
 
 
-    }
+    
 
 
-    chobit = ()=>{
 
 
-        var list_div = document.createElement("div");
-        document.querySelectorAll(".track-list li").forEach(o=>{ 
-            list_div.innerHTML += `<a target="_blank" href="${o.dataset.src}">${o.dataset.title}</a><BR>`;
-        });
-        
-        document.querySelector(".file-info-box").prepend(list_div);
-    }
+    
 
     StyleSet = ()=>{
 
@@ -443,13 +407,13 @@ class ClassEx {
 
         var styleSheet = document.createElement("style");
         styleSheet.id = `${this.ExId}_all`;
-        styleSheet.innerText = this.WebCfg.all.style;
+        styleSheet.innerText = this.Style.all;
 
         document.head.appendChild( styleSheet );
         
 
-        if(this.WebCfg[ this.Web ].style===null || 
-            this.WebCfg[ this.Web ].style===undefined) return;
+        if(this.Style[ this.Web ]===null || 
+            this.Style[ this.Web ]===undefined) return;
 
         var styleSheet = document.createElement("style");
         styleSheet.id = `${this.ExId}_${this.Web}`;
