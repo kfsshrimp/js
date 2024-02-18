@@ -7,10 +7,8 @@
 
         _run = true;
 
-
         video = document.querySelector("video")
 
-        div.innerHTML = `${this.SecToTime(Math.floor(video.currentTime))}`;
 
         if(document.querySelector("iframe").contentDocument.querySelector("yt-emoji-picker-renderer")!==null){
             document.querySelector("iframe").contentDocument.querySelector("yt-emoji-picker-renderer").style = `
@@ -44,13 +42,18 @@
             let btn = document.createElement("button");
             btn.innerHTML = "YTDL";
             btn.dataset.href = `https://www.youtube.com${link.getAttribute("href")}`;
-            btn.addEventListener("click",this.YTDL);
+            btn.addEventListener("click",YTDL);
             link.parentElement.appendChild(btn);
         });
 
-        setTimeout(()=>{ _run = false;},this.mousemove_time_cfg.sec*1000);
+        setTimeout(()=>{ _run = false;},1*1000);
         
     });
+
+
+    function YTDL(){
+
+    }
 
 })();
 
