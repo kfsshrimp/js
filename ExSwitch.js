@@ -85,6 +85,9 @@ class ClassEx {
             `
         }
         this.Func = {
+            plukr:()=>{
+
+            },
             twitter:()=>{
                 var _run = false;
                 document.addEventListener("mousemove",()=>{
@@ -366,11 +369,11 @@ class ClassEx {
 
                 console.log(this.Web);
 
-            if(this[ this.Web ]!==undefined){
+            if(this.Func[ this.Web ]!==undefined){
 
                 console.log(this.Web);
 
-                this[ this.Web ]();
+                this.Func[ this.Web ]();
                 return false;
             }
 
@@ -380,6 +383,9 @@ class ClassEx {
 
 
         this.StyleSet();
+
+
+        console.log(this);
        
     }
 
@@ -388,11 +394,11 @@ class ClassEx {
     StyleSet = ()=>{
 
         console.log('StyleSet');
-        
+
 
         var styleSheet = document.createElement("style");
         styleSheet.id = `${this.ExId}_${this.Web}`;
-        styleSheet.innerText = this.Style.all + this.Style[ this.Web ]||``;
+        styleSheet.innerText = this.Style.all + (this.Style[ this.Web ]||``);
 
         console.log(styleSheet.innerText);
 
