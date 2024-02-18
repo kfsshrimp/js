@@ -165,14 +165,13 @@ class ClassEx {
             if(Object.keys(this.WebCfg).find(list=>list===url)!==undefined)
                 this.Web = Object.keys(this.WebCfg).find(list=>list===url);
 
+            this.StyleSet();
 
             if(this[ this.Web ]!==undefined){
-
 
                 console.log(this.Web);
 
                 this[ this.Web ]();
-                this.StyleSet();
                 return false;
             }
 
