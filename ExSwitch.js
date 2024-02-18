@@ -356,9 +356,6 @@ class ClassEx {
 
         this.MsgPop( `LOAD Class ${this.ExId}` );
 
-        this.StyleSet();
-
-        
 
         location.host.split(".").every(url=>{
 
@@ -378,28 +375,15 @@ class ClassEx {
             }
 
             return true;
-            
+
         });
 
-        console.log(this.Func);
-        
-        
 
+        this.StyleSet();
        
     }
 
 
-
-
-    
-
-
-    
-
-
-
-
-    
 
     StyleSet = ()=>{
 
@@ -704,38 +688,7 @@ class ClassEx {
             this.MsgPop(`已複製指令：${this.ytdl_cfg.flag.clipboard_txt}`);
         },100);
 
-        /*
-        if(this.clipboard_txt!==""){
-
-            var _f = prompt("輸入YTDL下載格式");
-
-            this.clipboard_txt = `${this.clipboard_txt.split("-F")[0]} -f ${_f} ${this.clipboard_txt.split("-F")[1]}
-            `;
-
-            if(_f==="" || _f===null) return;
-
-            setTimeout(()=>{
-                navigator.clipboard.writeText(this.clipboard_txt);
-                
-                this.MsgPop(`已複製指令：${this.clipboard_txt}`);
-
-                this.clipboard_txt = "";
-            },100);
-
-            return;
-        }
         
-
-
-        this.clipboard_txt = `yt-dlp --cookies-from-browser firefox -F --write-thumbnail ${e.target.dataset.href}
-        `;
-
-        setTimeout(()=>{
-            navigator.clipboard.writeText(this.clipboard_txt);
-            
-            this.MsgPop(`已複製指令：${this.clipboard_txt}`);
-        },100);
-        */
 
     }
 
