@@ -5,6 +5,30 @@ class ClassEx {
         this.ExId = "kfsshrimpEx";
 
         this.WebCfg =  {
+            all:{
+                style:`
+                    #MsgPop{
+                        position:fixed;
+                        z-index: 9999;
+                        padding: 10px;
+                        border-radius: 5px;
+                        background: #000;
+                        color: #fff;
+                        text-align: center;
+                        font-size: 10px;
+                        border: 2px #0a0 solid;
+                        top: 30%;
+                        left: 30%;
+                    }
+                    canvas.Screenshot{
+                        top: 0px;
+                        left: 0px;
+                        position: absolute;
+                        z-index: 9999;
+                        cursor: pointer;
+                    }                
+                `
+            },
             twitter:{
 
                 
@@ -416,15 +440,20 @@ class ClassEx {
 
     StyleSet = ()=>{
 
-
         console.log('StyleSet');
+
+        var styleSheet = document.createElement("style");
+        styleSheet.id = `${this.ExId}_all`;
+        styleSheet.innerText = this.WebCfg.all.style;
+
+        document.head.appendChild( styleSheet );
         
 
         if(this.WebCfg[ this.Web ].style===null || 
             this.WebCfg[ this.Web ].style===undefined) return;
 
         var styleSheet = document.createElement("style");
-        styleSheet.id = this.ExId;
+        styleSheet.id = `${this.ExId}_${this.Web}`;
         styleSheet.innerText = this.WebCfg[ this.Web ].style;
 
         console.log(styleSheet.innerText);
