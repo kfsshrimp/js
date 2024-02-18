@@ -388,20 +388,11 @@ class ClassEx {
     StyleSet = ()=>{
 
         console.log('StyleSet');
-
-        var styleSheet = document.createElement("style");
-        styleSheet.id = `${this.ExId}_all`;
-        styleSheet.innerText = this.Style.all;
-
-        document.head.appendChild( styleSheet );
         
-
-        if(this.Style[ this.Web ]===null || 
-            this.Style[ this.Web ]===undefined) return;
 
         var styleSheet = document.createElement("style");
         styleSheet.id = `${this.ExId}_${this.Web}`;
-        styleSheet.innerText = this.WebCfg[ this.Web ].style;
+        styleSheet.innerText = this.Style.all + this.Style[ this.Web ]||``;
 
         console.log(styleSheet.innerText);
 
