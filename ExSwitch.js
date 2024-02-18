@@ -85,7 +85,7 @@ class ClassEx {
             `
         }
         this.Func = {
-            plukr:()=>{
+            plurk:()=>{
 
             },
             twitter:()=>{
