@@ -9,7 +9,9 @@ style.innerHTML = `
 button{
     cursor:pointer;
 }
-
+[type="file"]{
+    cursor:pointer;
+}
 #Progress{
     padding: 10px;
     width: 100%;
@@ -53,7 +55,7 @@ var ImagesList = {};
 var nav_count = 0;
 var all_img = 0;
 var now_img = 0;
-var load_sec = 1;
+var load_sec = 2;
 var NavMoItemList = document.querySelectorAll(".nav-mo-item");
 
 
@@ -62,7 +64,7 @@ var NavMoItemList = document.querySelectorAll(".nav-mo-item");
 var file;
 var reader;
 var link;
-var download_sec = 2;
+var download_sec = 1;
 var y_m_now = 0;
 
 (()=>{
@@ -157,7 +159,7 @@ function NavMoItemLoop(){
     if(NavMoItemList[nav_count]===undefined){
 
         var file = new File( [ JSON.stringify(ImagesList) ],
-            `圖片清單.json`,
+            `img_list.json`,
             {
                 type: "application/json"
             }
@@ -216,8 +218,19 @@ function NavMoItemLoop(){
 
 function DownLoadImageLoop(obj){
 
-    
-    if(Object.keys(ImagesList).reverse()[y_m_now]===undefined) return;
+    document.querySelector(`[type="file"]`).setAttribute("disabled","disabled");
+    document.querySelectorAll("button").forEach(btn=>{
+        btn.setAttribute("disabled","disabled");
+    });
+
+    if(Object.keys(ImagesList).reverse()[y_m_now]===undefined){
+
+        document.querySelector(`[type="file"]`).removeAttribute("disabled");
+        document.querySelectorAll("button").forEach(btn=>{
+            btn.removeAttribute("disabled");
+        });
+        return;
+    }
 
     ym = obj.dataset.ym||Object.keys(ImagesList).reverse()[y_m_now];
     var img = ImagesList[ ym ][now_img];
@@ -240,6 +253,10 @@ function DownLoadImageLoop(obj){
 
         if(obj.dataset.ym!==undefined){
 
+            document.querySelector(`[type="file"]`).removeAttribute("disabled");
+            document.querySelectorAll("button").forEach(btn=>{
+                btn.removeAttribute("disabled");
+            });
             console.log("該月結束");
             return;
         }
