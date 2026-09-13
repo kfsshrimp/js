@@ -17,6 +17,15 @@ function PlurkApi( opt = {} )
         "K7TtXccPALzfCVrtohLffJOjCc63XauX"
     ];
 
+    x = [
+        "luHoxQAJAu79",//key
+        "HFjHImCkxxAgoiIqChRXS3CCBSE8MfLb",//secret
+        "ReqPRTJObEXe",//token
+        "qMyJ1Ycz5gdJlefbzLvfr4gn"//token secret
+    ];
+
+    console.log(x);
+
     var timestamp = (s = 10)=>{ return new Date().getTime().toString().substr(0,s); }
     var nonce = ()=>{ return new Date().getTime().toString().substr(-8); }
 
@@ -219,6 +228,22 @@ function PlurkApi( opt = {} )
 
         //Data url 順序隨意
         var url = (this.mode==="CORS")?config.CORS + ("app="+this.act+"&oauth_signature="+oauth_signature +"&"+ this.SBS):"https://www.plurk.com/APP/"+this.act+"?oauth_signature="+oauth_signature +"&"+ this.SBS;
+        
+
+        /*
+        console.log(url);
+
+        console.log(this.func({}));
+
+        return;
+        
+        fetch(url).then(data=>{
+            console.log(data);
+
+        });
+        
+        return;
+        */
         
 
         var xml;
